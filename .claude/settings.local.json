@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(npx netlify:*)",
+      "Bash(netlify deploy:*)",
+      "Bash(tar -tzf /root/shuwu_web/cc-switch.tar.gz)",
+      "Bash(tar -xzf /root/shuwu_web/cc-switch.tar.gz -C /tmp/)",
+      "Read(//tmp/**)",
+      "Bash(grep -E \"\\(package\\\\.json|\\\\.js$\\)\")",
+      "Bash(npm install:*)",
+      "Bash(node --input-type=module:*)",
+      "Bash(git rm:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git config:*)",
+      "Bash(curl -s -H \"Authorization: token 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\" https://api.github.com/user/repos?per_page=10)",
+      "Bash(railway --version)",
+      "Bash(PGPASSWORD=lXbqYuMUmFzWgWjIFepqqpGPmUiErqqc psql \"postgresql://postgres:lXbqYuMUmFzWgWjIFepqqpGPmUiErqqc@ballast.proxy.rlwy.net:19102/railway\" -f src/db/schema.sql)",
+      "Bash(apt-get install:*)",
+      "Bash(psql \"postgresql://postgres:lXbqYuMUmFzWgWjIFepqqpGPmUiErqqc@ballast.proxy.rlwy.net:19102/railway\" -f /root/shuwu_api/src/db/schema.sql)",
+      "Bash(curl -s https://shuwuapi-production.up.railway.app/api/merchants)"
+    ]
+  }
+}
