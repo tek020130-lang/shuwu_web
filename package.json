@@ -20,7 +20,7 @@
     "js-conflux-sdk": "^2.5.1"
   },
   "devDependencies": {
-    "vite": "^8.0.1",
+    "vite": "^7.3.1",
     "vite-plugin-node-polyfills": "^0.25.0"
   }
 }
