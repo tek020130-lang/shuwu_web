@@ -56,3 +56,6 @@
 ## 注意事项
 - 验证码目前是开发模式（ALIYUN_ACCESS_KEY=dev），任何6位数字可通过
 - 旧 Netlify 链接 https://incredible-gnome-f35455.netlify.app 已废弃
+
+## 更新记录
+- **2026-03-25** — 完成后端 API + 数据库初始化 + 前端部署，整个全栈架构跑通
