@@ -89,7 +89,6 @@ function renderFeed(container) {
 export function renderSquare(container) {
   container.innerHTML = `
     <div class="sq-header">
-      <div class="sq-title">广场</div>
       <div class="sq-tabs" id="sq-tabs">
         ${TABS.map(t => `<button class="sq-tab${t === activeTab ? ' active' : ''}" data-tab="${t}">${t}</button>`).join('')}
         <div class="sq-tab-line" id="sq-tab-line"></div>

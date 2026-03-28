@@ -55,13 +55,21 @@ function renderFeed(list) {
         <div class="merchant-card${m.goldTier ? ' gold-tier' : ''}" data-id="${m.id}">
           <div class="card-img">
             <img src="${m.image}" alt="${m.name}" loading="lazy" />
+            ${m.goldTier ? '<div class="card-flagship-badge"><svg viewBox="0 0 24 24" fill="currentColor" style="width:10px;height:10px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> 数物旗舰店</div>' : ''}
+            ${m.sworlSupport ? '<div class="sworl-badge">S</div>' : ''}
           </div>
           <div class="card-body">
-            <div class="card-name">${m.name}</div>
+            <div class="card-name-row">
+              <div class="card-name">${m.name}</div>
+              <div class="card-rating"><b>${m.rating}</b></div>
+            </div>
             <div class="card-desc">${m.desc}</div>
-            <div class="card-rating">评分 <b>${m.rating}</b></div>
+            <div class="card-meta">
+              ${m.distance ? `<span class="card-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><path d="M12 21s-8-4.5-8-11a8 8 0 1116 0c0 6.5-8 11-8 11z"/><circle cx="12" cy="10" r="3"/></svg>${m.distance}</span>` : ''}
+              ${m.openTime ? `<span class="card-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg>${m.openTime}</span>` : ''}
+            </div>
+            ${m.tags && m.tags.length ? `<div class="card-tags">${m.tags.map(t => `<span class="card-tag${m.goldTier ? ' gold' : ''}">${t}</span>`).join('')}</div>` : ''}
           </div>
-          ${m.sworlSupport ? '<div class="sworl-badge">S</div>' : ''}
         </div>
       `).join('')}
     </div>

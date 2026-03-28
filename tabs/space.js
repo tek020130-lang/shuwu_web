@@ -104,7 +104,12 @@ async function renderSpaceMain(container) {
       <!-- Top Bar -->
       <div class="sp-topbar">
         <button class="sp-avatar-btn" id="sp-avatar-btn">
-          <div class="sp-avatar" style="background:${profile.avatarColor}">${profile.userName.charAt(0)}</div>
+          <div class="sp-avatar">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:18px;height:18px">
+              <circle cx="12" cy="8" r="4"/>
+              <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+            </svg>
+          </div>
         </button>
         <div class="sp-network-pill">
           <div class="sp-net-dot"></div>
@@ -222,6 +227,16 @@ async function renderSpaceMain(container) {
         `).join('')}
       </div>
     </div>
+
+    <!-- NFT Fullscreen Overlay -->
+    <div class="nft-fullscreen-overlay" id="nft-fullscreen-overlay">
+      <button class="nft-fullscreen-close" id="nft-fullscreen-close">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+      <div class="nft-fullscreen-card" id="nft-fullscreen-card"></div>
+    </div>
   `;
 
   // More assets toggle
@@ -252,6 +267,41 @@ async function renderSpaceMain(container) {
   // Gallery all
   container.querySelector('#sp-gallery-all').addEventListener('click', () => {
     window.dispatchEvent(new CustomEvent('openGallery'));
+  });
+
+  // NFT card fullscreen
+  const fsOverlay = container.querySelector('#nft-fullscreen-overlay');
+  const fsCard = container.querySelector('#nft-fullscreen-card');
+  container.querySelector('#nft-fullscreen-close').addEventListener('click', () => {
+    fsOverlay.classList.remove('active');
+  });
+  fsOverlay.addEventListener('click', e => {
+    if (e.target === fsOverlay) fsOverlay.classList.remove('active');
+  });
+  container.querySelector('#sp-gallery-track').addEventListener('click', e => {
+    const card = e.target.closest('.sp-nft-card');
+    if (!card) return;
+    const nft = nfts.find(n => n.id === +card.dataset.id);
+    if (!nft) return;
+    const tierLabel = nft.tier === 'genesis' ? '创世' : nft.tier === 'premium' ? '高阶' : '基础';
+    fsCard.innerHTML = `
+      <div class="nft-fullscreen-glow" style="--nft-color:${nft.color}; background:${nft.color}">✦</div>
+      <div class="nft-fullscreen-tier">${tierLabel}</div>
+      <div class="nft-fullscreen-name">${nft.name}</div>
+      <div class="nft-fullscreen-boost">分红加成 ${nft.dividendBoost}</div>
+      <div class="nft-fullscreen-divider"></div>
+      <div class="nft-fullscreen-meta">
+        <div class="nft-fullscreen-meta-item">
+          <div class="nft-fullscreen-meta-label">等级</div>
+          <div class="nft-fullscreen-meta-val">${tierLabel}</div>
+        </div>
+        <div class="nft-fullscreen-meta-item">
+          <div class="nft-fullscreen-meta-label">分红加成</div>
+          <div class="nft-fullscreen-meta-val">${nft.dividendBoost}</div>
+        </div>
+      </div>
+    `;
+    fsOverlay.classList.add('active');
   });
 }
 
