@@ -1,8 +1,21 @@
 import { mallProducts, mallCollections, newDrops } from '../data/mock.js';
 
-const DATES = ['全部', '3月', '2月', '1月'];
+const DATE_FILTERS = [
+  { date: '03/28', day: '今天' },
+  { date: '03/29', day: '明天' },
+  { date: '03/30', day: '周日' },
+  { date: '03/31', day: '周一' },
+  { date: '04/01', day: '周二' },
+  { date: '04/02', day: '周三' },
+];
+
 let activeCollection = 'all';
 let activeDate = '全部';
+
+// SWORL 图标 SVG
+function sworlIcon(id = '') {
+  return `<svg viewBox="0 0 24 24" fill="none" style="width:15px;height:15px"><circle cx="12" cy="12" r="10" fill="url(#sg-mall${id})"/><path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4" stroke="white" stroke-width="2" stroke-linecap="round"/><defs><linearGradient id="sg-mall${id}" x1="0" y1="0" x2="24" y2="24"><stop stop-color="#8B5CF6"/><stop offset="1" stop-color="#A78BFA"/></linearGradient></defs></svg>`;
+}
 
 function typeLabel(type) {
   return type === 'nft'
@@ -10,32 +23,30 @@ function typeLabel(type) {
     : '<span class="mall-tag phygital-tag">含实物</span>';
 }
 
-function renderDropCard(p) {
-  return `
-    <div class="mall-drop-card" data-id="${p.id}">
-      <div class="mall-drop-img">
-        <img src="${p.image}" alt="${p.name}" loading="lazy" />
-        ${p.limited ? '<div class="mall-limited-badge">限定</div>' : ''}
-      </div>
-      <div class="mall-drop-info">
-        ${typeLabel(p.type)}
-        <div class="mall-drop-name">${p.name}</div>
-        <div class="mall-drop-price">${p.price.toLocaleString()} <span>SWORL</span></div>
-      </div>
-    </div>
-  `;
-}
-
 function renderProductCard(p) {
   return `
-    <div class="mall-product-card${p.limited ? ' limited' : ''}" data-id="${p.id}">
-      <div class="mall-product-img">
+    <div class="mall-product-card-new glass-card" data-id="${p.id}">
+      <div class="prod-img">
         <img src="${p.image}" alt="${p.name}" loading="lazy" />
+        ${p.limited ? '<div class="prod-badge-new">限定</div>' : ''}
+        <div class="prod-edition-badge glass" style="position:absolute;top:10px;right:10px;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:500">${typeLabel(p.type)}</div>
+        <button class="prod-like-btn glass" data-id="${p.id}" style="position:absolute;bottom:10px;right:10px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:15px;height:15px"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+        </button>
       </div>
-      <div class="mall-product-body">
-        ${typeLabel(p.type)}
-        <div class="mall-product-name">${p.name}</div>
-        <div class="mall-product-price">${p.price.toLocaleString()} <span>SWORL</span></div>
+      <div class="prod-info">
+        <div class="prod-name">${p.name}</div>
+        <div class="prod-creator">${p.series || p.creator}</div>
+        <div class="prod-price-row">
+          <div class="prod-price">
+            ${sworlIcon(p.id)}
+            ${p.price.toLocaleString()}
+          </div>
+          <div class="prod-likes">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            ${Math.floor(Math.random() * 2000 + 100)}
+          </div>
+        </div>
       </div>
     </div>
   `;
@@ -50,12 +61,15 @@ function getFiltered() {
 }
 
 function renderFeed(container) {
-  container.querySelector('#mall-feed').innerHTML = getFiltered().map(renderProductCard).join('');
+  container.querySelector('#mall-product-grid').innerHTML = getFiltered().map(renderProductCard).join('');
 }
 
 function renderDateCol(container) {
-  container.querySelector('#mall-date-col').innerHTML = DATES.map(d => `
-    <button class="mall-date-btn${d === activeDate ? ' active' : ''}" data-date="${d}">${d}</button>
+  container.querySelector('#mall-date-col').innerHTML = DATE_FILTERS.map((d, i) => `
+    <button class="mall-date-btn-new glass-icon${i === 0 ? ' active' : ''}" data-date="${d.date}">
+      <div class="date-day">${d.day}</div>
+      <div class="date-num">${d.date}</div>
+    </button>
   `).join('');
 }
 
@@ -135,34 +149,75 @@ export function renderMall(container) {
         </button>
       </div>
 
-      <div class="mall-search-bar" id="mall-search-trigger">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-        </svg>
-        搜索商品、创作者…
-      </div>
-
-      <div class="mall-creator-banner" id="mall-creator-banner">
-        <div class="mall-creator-left">
-          <div class="mall-creator-title">数物创作中心</div>
-          <div class="mall-creator-sub">上传设计 · 铸造 NFT · 赚取版税</div>
+      <!-- 精致搜索栏 -->
+      <div style="padding:0 16px 16px">
+        <div class="glass-input" id="mall-search-trigger" style="height:50px;border-radius:25px;display:flex;align-items:center;gap:10px;padding:0 20px;cursor:pointer;color:var(--text-sub);font-size:14px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:17px;height:17px;flex-shrink:0">
+            <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+          搜索NFT、数字藏品、文创…
         </div>
-        <button class="mall-creator-cta">Create →</button>
       </div>
 
-      <div class="mall-section-label">New Drops</div>
-      <div class="mall-drops-track">
-        ${newDrops.map(renderDropCard).join('')}
+      <!-- 创作中心 banner -->
+      <div class="mall-creator-banner-new glass-gold" id="mall-creator-banner">
+        <div class="mall-creator-deco mall-creator-deco-1"></div>
+        <div class="mall-creator-deco mall-creator-deco-2"></div>
+        <div class="mall-creator-banner-inner">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+            <div style="display:flex;align-items:center;gap:14px">
+              <div class="mall-creator-icon-wrap">
+                <div class="mall-creator-icon-box">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="width:30px;height:30px;color:#fff"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19l.5 1.5L7 21l-1.5.5L5 23l-.5-1.5L3 21l1.5-.5L5 19z"/><path d="M19 5l.5 1.5L21 7l-1.5.5L19 9l-.5-1.5L17 7l1.5-.5L19 5z"/></svg>
+                </div>
+                <div class="mall-creator-icon-dot"></div>
+              </div>
+              <div>
+                <div class="mall-creator-banner-title">创作中心</div>
+                <div class="mall-creator-banner-sub">开启Web3创作之旅</div>
+              </div>
+            </div>
+            <div class="glass-icon" style="width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:18px;height:18px"><path d="M9 18l6-6-6-6"/></svg>
+            </div>
+          </div>
+          <div class="mall-creator-feature-tags">
+            <div class="mall-creator-feature-tag">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><path d="M18.37 2.63L14 7l-1.59-1.59a2 2 0 00-2.82 0L8 7l9 9 1.59-1.59a2 2 0 000-2.82L17 10l4.37-4.37a2.12 2.12 0 10-3-3z"/><path d="M9 8c-2 3-4 3.5-7 4l8 10c2-1 6-5 6-10"/></svg>
+              NFT铸造
+            </div>
+            <div class="mall-creator-feature-tag">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8L19 13M17.8 6.2L19 5M3 21l9-9M12.2 6.2L11 5"/></svg>
+              文创设计
+            </div>
+            <div class="mall-creator-feature-tag">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:13px;height:13px"><circle cx="8" cy="8" r="2.5"/><circle cx="16" cy="16" r="2.5"/><path d="M6 18L18 6"/></svg>
+              永久版税
+            </div>
+          </div>
+          <div class="mall-creator-banner-footer">
+            <div class="mall-creator-cost">
+              ${sworlIcon('banner')}
+              创作消耗 50 SWORL
+            </div>
+            <div class="mall-creator-royalty">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:14px;height:14px"><path d="M2.7 10.3l8.6 10.4a1 1 0 001.4 0l8.6-10.4a1 1 0 00.1-1.2L18.6 4a1 1 0 00-.8-.4H6.2a1 1 0 00-.8.4L2.6 9.1a1 1 0 00.1 1.2z"/><path d="M12 3.6L9 9l3 11.7L15 9l-3-5.4z"/><path d="M2.7 9.6h18.6"/></svg>
+              采用即享 10% 永久分红
+            </div>
+          </div>
+        </div>
       </div>
 
+      <!-- 分类标签 -->
       <div class="mall-collections" id="mall-collections">
         <button class="mall-col-tab active" data-col="all">全部</button>
         ${mallCollections.map(c => `<button class="mall-col-tab" data-col="${c}">${c}</button>`).join('')}
       </div>
 
-      <div class="mall-body">
-        <div class="mall-date-col" id="mall-date-col"></div>
-        <div class="mall-feed" id="mall-feed"></div>
+      <!-- 日期 + 商品瀑布流 -->
+      <div class="mall-body" style="padding:0 0 0 16px">
+        <div class="mall-date-col-new" id="mall-date-col"></div>
+        <div class="mall-product-grid" id="mall-product-grid"></div>
       </div>
     </div>
   `;
@@ -174,14 +229,9 @@ export function renderMall(container) {
     window.dispatchEvent(new CustomEvent('openSearch'));
   });
 
-  container.querySelector('.mall-drops-track').addEventListener('click', e => {
-    const card = e.target.closest('.mall-drop-card');
-    if (card) openDetail(+card.dataset.id);
-  });
-
-  container.querySelector('#mall-feed').addEventListener('click', e => {
-    const card = e.target.closest('.mall-product-card');
-    if (card) openDetail(+card.dataset.id);
+  container.querySelector('#mall-product-grid').addEventListener('click', e => {
+    const card = e.target.closest('.mall-product-card-new');
+    if (card && !e.target.closest('.prod-like-btn')) openDetail(+card.dataset.id);
   });
 
   container.querySelector('#mall-collections').addEventListener('click', e => {
@@ -193,10 +243,10 @@ export function renderMall(container) {
   });
 
   container.querySelector('#mall-date-col').addEventListener('click', e => {
-    const btn = e.target.closest('.mall-date-btn');
+    const btn = e.target.closest('.mall-date-btn-new');
     if (!btn) return;
     activeDate = btn.dataset.date;
-    container.querySelectorAll('.mall-date-btn').forEach(b => b.classList.toggle('active', b.dataset.date === activeDate));
+    container.querySelectorAll('.mall-date-btn-new').forEach(b => b.classList.toggle('active', b.dataset.date === activeDate));
     renderFeed(container);
   });
 

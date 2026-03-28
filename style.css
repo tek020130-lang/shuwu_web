@@ -41,73 +41,98 @@ body {
   background-attachment: fixed;
 }
 
-/* ── Liquid Glass System ── */
+/* ── Liquid Glass System (Enhanced) ── */
 .glass {
-  background: linear-gradient(135deg, var(--glass-white) 0%, var(--glass-refraction) 50%, var(--glass-white) 100%);
-  backdrop-filter: blur(40px) saturate(200%);
-  -webkit-backdrop-filter: blur(40px) saturate(200%);
-  border: 1px solid var(--glass-border);
-  box-shadow: 0 8px 32px var(--glass-shadow), 0 1px 0 inset var(--glass-inner), 0 -1px 0 inset rgba(180,185,200,0.1);
+  background: linear-gradient(135deg, rgba(255,255,255,0.82) 0%, rgba(248,250,255,0.55) 50%, rgba(255,255,255,0.78) 100%);
+  backdrop-filter: blur(48px) saturate(220%) brightness(1.04);
+  -webkit-backdrop-filter: blur(48px) saturate(220%) brightness(1.04);
+  border: 1px solid rgba(255,255,255,0.95);
+  box-shadow: 0 8px 32px rgba(80,90,130,0.1), 0 1.5px 0 inset rgba(255,255,255,1), 0 -1px 0 inset rgba(180,185,210,0.12), 0 0 0 0.5px rgba(255,255,255,0.6);
 }
 .glass-card {
   position: relative;
-  background: linear-gradient(165deg, rgba(255,255,255,0.9) 0%, rgba(252,253,255,0.7) 40%, rgba(255,255,255,0.85) 100%);
-  backdrop-filter: blur(32px) saturate(180%);
-  -webkit-backdrop-filter: blur(32px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.95);
+  background: linear-gradient(165deg, rgba(255,255,255,0.92) 0%, rgba(250,252,255,0.72) 40%, rgba(255,255,255,0.88) 100%);
+  backdrop-filter: blur(36px) saturate(190%) brightness(1.02);
+  -webkit-backdrop-filter: blur(36px) saturate(190%) brightness(1.02);
+  border: 1px solid rgba(255,255,255,0.98);
   border-radius: 20px;
-  box-shadow: 0 4px 24px rgba(80,90,120,0.05), 0 12px 48px rgba(80,90,120,0.03), 0 1px 0 inset rgba(255,255,255,1), 0 -0.5px 0 inset rgba(200,205,220,0.3);
+  box-shadow: 0 4px 24px rgba(80,90,120,0.06), 0 12px 48px rgba(80,90,120,0.04), 0 1.5px 0 inset rgba(255,255,255,1), 0 -0.5px 0 inset rgba(200,205,225,0.35), 0 0 0 0.5px rgba(255,255,255,0.5);
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 .glass-card::before {
   content: '';
   position: absolute; inset: 0; border-radius: inherit;
-  background: linear-gradient(135deg, rgba(255,255,255,0.4) 0%, transparent 60%);
+  background: linear-gradient(135deg, rgba(255,255,255,0.55) 0%, rgba(255,255,255,0.1) 45%, transparent 70%);
   pointer-events: none;
 }
 .glass-card:hover {
-  box-shadow: 0 8px 32px rgba(80,90,120,0.08), 0 24px 64px rgba(80,90,120,0.05), 0 1px 0 inset rgba(255,255,255,1), 0 -0.5px 0 inset rgba(200,205,220,0.4);
-  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(80,90,120,0.09), 0 24px 64px rgba(80,90,120,0.06), 0 1.5px 0 inset rgba(255,255,255,1), 0 -0.5px 0 inset rgba(200,205,225,0.45);
+  transform: translateY(-3px);
 }
 .glass-gold {
   position: relative;
-  background: linear-gradient(165deg, rgba(255,255,255,0.92) 0%, rgba(255,248,220,0.5) 40%, rgba(255,255,255,0.88) 100%);
-  backdrop-filter: blur(32px) saturate(180%);
-  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  background: linear-gradient(165deg, rgba(255,255,255,0.94) 0%, rgba(255,248,215,0.55) 40%, rgba(255,255,255,0.9) 100%);
+  backdrop-filter: blur(36px) saturate(190%);
+  -webkit-backdrop-filter: blur(36px) saturate(190%);
   border: 1.5px solid var(--gold-border);
   border-radius: 20px;
-  box-shadow: 0 4px 24px var(--gold-glow), 0 12px 48px rgba(201,168,76,0.08), 0 1px 0 inset rgba(240,220,160,0.5), 0 -0.5px 0 inset rgba(180,140,60,0.2);
+  box-shadow: 0 4px 24px var(--gold-glow), 0 12px 48px rgba(201,168,76,0.1), 0 1.5px 0 inset rgba(245,225,160,0.6), 0 -0.5px 0 inset rgba(180,140,60,0.25);
   transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
 }
 .glass-gold::before {
   content: '';
   position: absolute; inset: 0; border-radius: inherit;
-  background: linear-gradient(135deg, rgba(240,210,120,0.3) 0%, transparent 50%);
+  background: linear-gradient(135deg, rgba(245,215,120,0.35) 0%, rgba(255,240,180,0.1) 40%, transparent 65%);
   pointer-events: none;
 }
+.glass-gold:hover {
+  box-shadow: 0 8px 40px rgba(201,168,76,0.22), 0 24px 64px rgba(201,168,76,0.12), 0 1.5px 0 inset rgba(245,225,160,0.7), 0 -0.5px 0 inset rgba(180,140,60,0.3);
+  transform: translateY(-3px);
+}
 .glass-icon {
-  background: linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(250,251,255,0.8) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.9);
-  box-shadow: 0 4px 16px rgba(80,90,120,0.06), 0 1px 0 inset rgba(255,255,255,1);
+  background: linear-gradient(145deg, rgba(255,255,255,0.97) 0%, rgba(248,250,255,0.82) 100%);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.95);
+  box-shadow: 0 4px 16px rgba(80,90,120,0.07), 0 1.5px 0 inset rgba(255,255,255,1), 0 0 0 0.5px rgba(255,255,255,0.6);
   transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
+.glass-icon:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 24px rgba(80,90,120,0.1), 0 1.5px 0 inset rgba(255,255,255,1);
+}
+/* 精致搜索栏 */
 .glass-input {
-  background: linear-gradient(to bottom, rgba(255,255,255,0.9) 0%, rgba(252,253,255,0.7) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(240,242,248,0.8);
-  box-shadow: 0 2px 8px rgba(80,90,120,0.04), 0 0.5px 0 inset rgba(255,255,255,0.9);
+  background: linear-gradient(to bottom, rgba(255,255,255,0.94) 0%, rgba(250,252,255,0.75) 100%);
+  backdrop-filter: blur(28px) saturate(180%);
+  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  border: 1px solid rgba(235,238,248,0.9);
+  box-shadow: 0 2px 12px rgba(80,90,120,0.05), 0 1px 0 inset rgba(255,255,255,0.95), 0 -0.5px 0 inset rgba(200,210,235,0.2);
   transition: all 0.3s ease;
 }
 .glass-input:focus {
-  border-color: rgba(220,225,240,1);
-  box-shadow: 0 4px 16px rgba(80,90,120,0.08), 0 0 0 3px rgba(200,210,240,0.15), 0 0.5px 0 inset rgba(255,255,255,1);
+  border-color: rgba(210,218,240,1);
+  box-shadow: 0 4px 20px rgba(80,90,120,0.1), 0 0 0 3px rgba(195,208,240,0.18), 0 1px 0 inset rgba(255,255,255,1);
   outline: none;
 }
 .shadow-depth {
   box-shadow: 0 2px 4px rgba(80,90,120,0.04), 0 8px 16px rgba(80,90,120,0.06), 0 24px 48px rgba(80,90,120,0.08);
+}
+
+/* ── 动画 ── */
+@keyframes float-gentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes shimmer-gold {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+.animate-float-gentle { animation: float-gentle 5s ease-in-out infinite; }
+.animate-shimmer-gold {
+  background: linear-gradient(90deg, transparent 0%, rgba(201,168,76,0.35) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: shimmer-gold 3s ease infinite;
 }
 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -1532,3 +1557,449 @@ img { display: block; width: 100%; object-fit: cover; }
   text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
 }
 .nft-fullscreen-meta-val { font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.9); }
+
+/* ══════════════════════════════════════
+   新布局样式 (xinUI 移植)
+══════════════════════════════════════ */
+
+/* ── 生活板块 快捷导航 ── */
+.life-quick-nav {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; padding: 20px 20px 0;
+}
+.life-quick-item {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  cursor: pointer;
+}
+.life-quick-icon {
+  width: 60px; height: 60px; border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.3s cubic-bezier(0.23,1,0.32,1), box-shadow 0.3s;
+}
+.life-quick-icon:active { transform: scale(0.92); }
+.life-quick-icon svg { width: 26px; height: 26px; color: rgba(26,26,26,0.7); }
+.life-quick-label { font-size: 11px; color: var(--text-sub); font-weight: 400; text-align: center; }
+
+/* 生活板块 搜索栏精致版 */
+.life-search-bar {
+  flex: 1; height: 44px; border-radius: 22px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 16px; color: var(--text-sub); font-size: 14px;
+  cursor: pointer;
+}
+.life-search-bar svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+/* 生活板块 推荐标题行 */
+.life-section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 20px 12px;
+}
+.life-section-title { font-size: 17px; font-weight: 600; letter-spacing: -0.3px; }
+.life-section-more {
+  font-size: 13px; color: var(--text-sub);
+  display: flex; align-items: center; gap: 2px;
+}
+.life-section-more svg { width: 14px; height: 14px; }
+
+/* ── 广场板块 新帖子卡片 ── */
+.sq-post-new {
+  padding: 20px; border-radius: 24px; margin-bottom: 0;
+  position: relative;
+}
+.sq-post-new .sq-author-row {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
+}
+.sq-post-new .sq-author-info { display: flex; align-items: center; gap: 12px; }
+.sq-avatar-img {
+  width: 44px; height: 44px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.9);
+  box-shadow: 0 2px 8px rgba(80,90,120,0.12);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 600; color: #fff;
+  flex-shrink: 0;
+}
+.sq-author-name-row { display: flex; align-items: center; gap: 6px; }
+.sq-author-name { font-size: 14px; font-weight: 600; }
+.sq-author-level {
+  padding: 2px 7px; border-radius: 6px;
+  background: var(--bg-card2); font-size: 10px; font-weight: 500; color: var(--text-sub);
+}
+.sq-post-time { font-size: 12px; color: var(--text-sub); }
+.sq-post-text { font-size: 14px; line-height: 1.65; color: var(--text); font-weight: 300; margin-bottom: 12px; }
+.sq-post-images {
+  display: grid; gap: 8px; margin-bottom: 14px; border-radius: 16px; overflow: hidden;
+}
+.sq-post-images.cols-1 { grid-template-columns: 1fr; }
+.sq-post-images.cols-2 { grid-template-columns: 1fr 1fr; }
+.sq-post-img { aspect-ratio: 16/10; overflow: hidden; border-radius: 12px; }
+.sq-post-img img { width: 100%; height: 100%; object-fit: cover; }
+.sq-post-actions {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 12px; border-top: 1px solid rgba(0,0,0,0.05);
+}
+.sq-action-new {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: 12px;
+  font-size: 13px; font-weight: 500; color: var(--text-sub);
+  background: none; border: none; cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.sq-action-new svg { width: 18px; height: 18px; }
+.sq-action-new:active { background: rgba(0,0,0,0.04); }
+.sq-action-new.liked { color: #8B5CF6; background: rgba(139,92,246,0.08); }
+
+/* 广场 热门话题 */
+.sq-hot-topics { padding: 0 16px 12px; }
+.sq-hot-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px;
+}
+.sq-hot-title { font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+.sq-hot-title svg { width: 15px; height: 15px; color: var(--text-sub); }
+.sq-hot-more { font-size: 12px; color: var(--text-sub); display: flex; align-items: center; gap: 2px; }
+.sq-hot-scroll { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+.sq-hot-scroll::-webkit-scrollbar { display: none; }
+.sq-hot-tag {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 16px; border-radius: 20px; white-space: nowrap;
+  cursor: pointer; flex-shrink: 0;
+  transition: transform 0.2s;
+}
+.sq-hot-tag:active { transform: scale(0.96); }
+.sq-hot-tag-hash { font-size: 13px; color: rgba(0,0,0,0.25); }
+.sq-hot-tag-name { font-size: 13px; font-weight: 500; }
+.sq-hot-tag-count { font-size: 11px; color: var(--text-sub); }
+
+/* ── 商城板块 新布局 ── */
+/* 商品瀑布流 2列 */
+.mall-product-grid {
+  flex: 1; display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; padding: 0 16px 0 0;
+}
+.mall-product-card-new {
+  border-radius: 24px; overflow: hidden; cursor: pointer;
+  transition: transform 0.2s var(--ease);
+  position: relative;
+}
+.mall-product-card-new:active { transform: scale(0.97); }
+.mall-product-card-new .prod-img {
+  aspect-ratio: 1/1; overflow: hidden; position: relative;
+}
+.mall-product-card-new .prod-img img {
+  width: 100%; height: 100%; object-fit: cover;
+  transition: transform 0.5s var(--ease);
+}
+.mall-product-card-new:active .prod-img img { transform: scale(1.04); }
+.prod-badge-new {
+  position: absolute; top: 10px; left: 10px;
+  padding: 3px 9px; border-radius: var(--radius-pill);
+  background: rgba(26,26,26,0.85); backdrop-filter: blur(8px);
+  color: #fff; font-size: 10px; font-weight: 600; letter-spacing: 0.5px;
+}
+.prod-edition-badge {
+  position: absolute; top: 10px; right: 10px;
+  padding: 3px 9px; border-radius: var(--radius-pill);
+  font-size: 10px; font-weight: 500;
+}
+.prod-like-btn {
+  position: absolute; bottom: 10px; right: 10px;
+  width: 34px; height: 34px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.25s;
+}
+.prod-like-btn svg { width: 15px; height: 15px; }
+.prod-like-btn.liked { background: #EF4444; color: #fff; box-shadow: 0 4px 12px rgba(239,68,68,0.35); }
+.mall-product-card-new .prod-info { padding: 12px 14px 14px; }
+.prod-name { font-size: 13px; font-weight: 600; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prod-creator { font-size: 11px; color: var(--text-sub); margin-bottom: 10px; }
+.prod-price-row { display: flex; align-items: center; justify-content: space-between; }
+.prod-price { display: flex; align-items: center; gap: 5px; font-size: 14px; font-weight: 700; }
+.prod-price svg { width: 15px; height: 15px; }
+.prod-likes { display: flex; align-items: center; gap: 3px; font-size: 11px; color: var(--text-sub); }
+.prod-likes svg { width: 12px; height: 12px; }
+
+/* 商城 日期列新样式 */
+.mall-date-col-new {
+  width: 56px; flex-shrink: 0;
+  display: flex; flex-direction: column; gap: 10px;
+  padding-right: 4px; position: relative;
+}
+.mall-date-col-new::after {
+  content: ''; position: absolute; left: 50%; top: 28px; bottom: 28px;
+  width: 1px; background: linear-gradient(to bottom, var(--border), rgba(0,0,0,0.03), transparent);
+  transform: translateX(-50%); z-index: 0;
+}
+.mall-date-btn-new {
+  width: 48px; padding: 10px 0; border-radius: 16px;
+  font-size: 10px; font-weight: 500; color: var(--text-sub);
+  background: none; border: none; cursor: pointer;
+  text-align: center; line-height: 1.4;
+  transition: all 0.25s var(--ease); position: relative; z-index: 1;
+}
+.mall-date-btn-new .date-day { font-size: 9px; opacity: 0.7; }
+.mall-date-btn-new .date-num { font-size: 11px; font-weight: 600; }
+.mall-date-btn-new.active {
+  background: #1A1A1A; color: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+}
+
+/* 商城 创作中心 banner 新样式 */
+.mall-creator-banner-new {
+  margin: 0 16px 20px; border-radius: 28px; overflow: hidden;
+  cursor: pointer; position: relative;
+  transition: transform 0.2s var(--ease);
+}
+.mall-creator-banner-new:active { transform: scale(0.98); }
+.mall-creator-banner-inner { padding: 24px; position: relative; z-index: 1; }
+.mall-creator-deco {
+  position: absolute; pointer-events: none;
+}
+.mall-creator-deco-1 {
+  top: -20px; right: -20px; width: 120px; height: 120px;
+  background: radial-gradient(circle, rgba(245,158,11,0.2), transparent 70%);
+  border-radius: 50%; filter: blur(20px);
+}
+.mall-creator-deco-2 {
+  bottom: -20px; left: -10px; width: 90px; height: 90px;
+  background: radial-gradient(circle, rgba(253,224,71,0.15), transparent 70%);
+  border-radius: 50%; filter: blur(16px);
+}
+.mall-creator-icon-wrap { position: relative; display: inline-block; margin-bottom: 16px; }
+.mall-creator-icon-box {
+  width: 60px; height: 60px; border-radius: 18px;
+  background: linear-gradient(135deg, #F59E0B, #FCD34D, #F59E0B);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 24px rgba(245,158,11,0.35);
+}
+.mall-creator-icon-box svg { width: 30px; height: 30px; color: #fff; }
+.mall-creator-icon-dot {
+  position: absolute; top: -4px; right: -4px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex; align-items: center; justify-content: center;
+}
+.mall-creator-icon-dot::after {
+  content: ''; width: 8px; height: 8px; border-radius: 50%; background: #F59E0B;
+}
+.mall-creator-banner-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; letter-spacing: -0.3px; }
+.mall-creator-banner-sub { font-size: 13px; color: var(--text-sub); margin-bottom: 16px; }
+.mall-creator-feature-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.mall-creator-feature-tag {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 12px; border-radius: var(--radius-pill);
+  background: rgba(255,255,255,0.65); backdrop-filter: blur(8px);
+  font-size: 12px; font-weight: 500; color: rgba(26,26,26,0.8);
+}
+.mall-creator-feature-tag svg { width: 13px; height: 13px; }
+.mall-creator-banner-footer {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 14px; border-top: 1px solid rgba(201,168,76,0.25);
+}
+.mall-creator-cost { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 500; }
+.mall-creator-cost svg { width: 16px; height: 16px; }
+.mall-creator-royalty { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: #B45309; }
+.mall-creator-royalty svg { width: 14px; height: 14px; }
+
+/* ── 空间板块 新布局 ── */
+/* 资产卡 */
+.sp-asset-card-new {
+  border-radius: 28px; overflow: hidden; position: relative;
+  background: linear-gradient(155deg, #2a2540 0%, #1a1830 50%, #222040 100%);
+  box-shadow: 0 16px 64px rgba(30,20,60,0.3), 0 4px 16px rgba(30,20,60,0.2);
+  margin: 12px 16px 0;
+}
+.sp-asset-card-new::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; z-index: 2;
+  background: linear-gradient(90deg, #C9A84C 0%, #A3E635 40%, #007AFF 70%, #AF52DE 100%);
+  border-radius: 28px 28px 0 0;
+}
+.sp-asset-deco-1 {
+  position: absolute; top: -30px; right: -30px;
+  width: 140px; height: 140px; border-radius: 50%;
+  background: rgba(255,255,255,0.04); pointer-events: none;
+}
+.sp-asset-deco-2 {
+  position: absolute; bottom: -20px; left: -20px;
+  width: 100px; height: 100px; border-radius: 50%;
+  background: rgba(255,255,255,0.03); pointer-events: none;
+}
+.sp-asset-inner { position: relative; z-index: 1; padding: 20px 22px 22px; }
+.sp-asset-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+.sp-network-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 12px; border-radius: var(--radius-pill);
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+  font-size: 13px; color: rgba(255,255,255,0.85);
+}
+.sp-network-btn svg { width: 14px; height: 14px; }
+.sp-more-assets-btn-new {
+  font-size: 12px; color: rgba(255,255,255,0.5);
+  display: flex; align-items: center; gap: 3px;
+  background: none; border: none; cursor: pointer;
+}
+.sp-more-assets-btn-new svg { width: 14px; height: 14px; }
+.sp-wallet-row {
+  display: flex; align-items: center; gap: 8px; margin-bottom: 18px;
+}
+.sp-wallet-row svg { width: 15px; height: 15px; color: rgba(255,255,255,0.5); }
+.sp-wallet-addr { font-size: 13px; color: rgba(255,255,255,0.75); font-family: monospace; }
+.sp-wallet-copy {
+  padding: 4px; border-radius: 6px; background: none; border: none; cursor: pointer;
+  transition: background 0.15s;
+}
+.sp-wallet-copy:active { background: rgba(255,255,255,0.1); }
+.sp-wallet-copy svg { width: 14px; height: 14px; color: rgba(255,255,255,0.5); }
+.sp-asset-token-row {
+  display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;
+}
+.sp-token-left { display: flex; align-items: center; gap: 12px; }
+.sp-token-icon {
+  width: 40px; height: 40px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.sp-token-icon.sworl { background: linear-gradient(135deg, #8B5CF6, #A78BFA); }
+.sp-token-icon.ecny { background: linear-gradient(135deg, #DC2626, #EF4444); }
+.sp-token-icon svg { width: 22px; height: 22px; }
+.sp-token-name { font-size: 15px; font-weight: 600; color: #fff; }
+.sp-token-right { text-align: right; }
+.sp-token-balance { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.5px; }
+.sp-token-value { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+.sp-asset-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 4px 0 16px; }
+
+/* 空间 快捷操作 新样式 */
+.sp-actions-new {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 12px; padding: 16px 16px 20px;
+}
+.sp-action-new {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  background: none; border: none; cursor: pointer;
+}
+.sp-action-icon-new {
+  width: 52px; height: 52px; border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.15s var(--ease);
+}
+.sp-action-icon-new svg { width: 22px; height: 22px; color: #fff; }
+.sp-action-new:active .sp-action-icon-new { transform: scale(0.9); }
+.sp-action-label { font-size: 11px; color: var(--text-sub); font-weight: 400; }
+
+/* 空间 数藏入口 */
+.sp-nft-entry {
+  margin: 0 16px 16px; border-radius: 22px; overflow: hidden;
+  cursor: pointer; transition: transform 0.2s var(--ease);
+}
+.sp-nft-entry:active { transform: scale(0.98); }
+.sp-nft-entry-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 18px;
+}
+.sp-nft-entry-left { display: flex; align-items: center; gap: 14px; }
+.sp-nft-entry-icon {
+  width: 48px; height: 48px; border-radius: 14px;
+  background: linear-gradient(135deg, #8B5CF6, #A78BFA);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(139,92,246,0.35);
+}
+.sp-nft-entry-icon svg { width: 24px; height: 24px; color: #fff; }
+.sp-nft-entry-title { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.sp-nft-entry-sub { font-size: 12px; color: var(--text-sub); }
+.sp-nft-entry-right { display: flex; align-items: center; gap: 8px; }
+.sp-nft-count-badge {
+  padding: 4px 10px; border-radius: var(--radius-pill);
+  background: rgba(139,92,246,0.1); color: #8B5CF6;
+  font-size: 12px; font-weight: 600;
+}
+.sp-nft-entry-arrow { width: 20px; height: 20px; color: var(--text-sub); }
+
+/* 空间 功能菜单 */
+.sp-menu-list {
+  margin: 0 16px 20px; border-radius: 22px; overflow: hidden;
+}
+.sp-menu-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; cursor: pointer; background: none; border: none;
+  width: 100%; font-family: inherit;
+  transition: background 0.15s;
+}
+.sp-menu-item:not(:last-child) { border-bottom: 1px solid rgba(0,0,0,0.05); }
+.sp-menu-item:active { background: rgba(0,0,0,0.03); }
+.sp-menu-item-left { display: flex; align-items: center; gap: 14px; }
+.sp-menu-icon {
+  width: 40px; height: 40px; border-radius: 12px;
+  background: var(--bg-card2);
+  display: flex; align-items: center; justify-content: center;
+}
+.sp-menu-icon svg { width: 18px; height: 18px; color: var(--text-sub); }
+.sp-menu-name { font-size: 14px; font-weight: 500; color: var(--text); }
+.sp-menu-desc { font-size: 11px; color: var(--text-sub); margin-top: 1px; }
+.sp-menu-right { display: flex; align-items: center; gap: 8px; }
+.sp-menu-badge {
+  padding: 3px 8px; border-radius: var(--radius-pill);
+  background: var(--text); color: #fff; font-size: 11px; font-weight: 600;
+}
+.sp-menu-arrow { width: 16px; height: 16px; color: #C7C7CC; }
+
+/* 空间 数藏全屏弹窗 */
+.sp-nft-modal {
+  position: fixed; inset: 0; z-index: 350;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  transition: opacity 0.3s var(--ease);
+}
+.sp-nft-modal.hidden { opacity: 0; pointer-events: none; }
+.sp-nft-modal-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.35); backdrop-filter: blur(6px);
+}
+.sp-nft-modal-sheet {
+  position: relative; z-index: 1;
+  background: #fff; border-radius: 28px 28px 0 0;
+  max-height: 85vh; overflow: hidden;
+  transform: translateY(100%);
+  transition: transform 0.4s var(--ease);
+  display: flex; flex-direction: column;
+}
+.sp-nft-modal:not(.hidden) .sp-nft-modal-sheet { transform: translateY(0); }
+.sp-nft-modal-handle { width: 36px; height: 4px; border-radius: 2px; background: #E5E5EA; margin: 12px auto 0; flex-shrink: 0; }
+.sp-nft-modal-title { font-size: 20px; font-weight: 700; text-align: center; padding: 16px 24px 4px; flex-shrink: 0; }
+.sp-nft-modal-sub { font-size: 13px; color: var(--text-sub); text-align: center; padding-bottom: 16px; flex-shrink: 0; }
+.sp-nft-modal-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 14px; padding: 0 20px 40px;
+  overflow-y: auto;
+}
+.sp-nft-modal-card {
+  border-radius: 20px; overflow: hidden; cursor: pointer;
+  transition: transform 0.2s var(--ease);
+}
+.sp-nft-modal-card:active { transform: scale(0.97); }
+.sp-nft-modal-img { aspect-ratio: 1/1; overflow: hidden; }
+.sp-nft-modal-img img { width: 100%; height: 100%; object-fit: cover; }
+.sp-nft-modal-info { padding: 12px; }
+.sp-nft-modal-name { font-size: 13px; font-weight: 600; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sp-nft-modal-collection { font-size: 11px; color: var(--text-sub); margin-bottom: 8px; }
+.sp-nft-modal-price { display: flex; align-items: center; gap: 5px; font-size: 13px; font-weight: 700; }
+.sp-nft-modal-price svg { width: 14px; height: 14px; }
+
+/* 空间 个人中心弹窗 */
+.sp-profile-modal {
+  position: fixed; inset: 0; z-index: 350;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  transition: opacity 0.3s var(--ease);
+}
+.sp-profile-modal.hidden { opacity: 0; pointer-events: none; }
+.sp-profile-modal-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.35); backdrop-filter: blur(6px);
+}
+.sp-profile-modal-sheet {
+  position: relative; z-index: 1;
+  background: #fff; border-radius: 28px 28px 0 0;
+  max-height: 85vh; overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.4s var(--ease);
+  padding: 0 0 40px;
+}
+.sp-profile-modal:not(.hidden) .sp-profile-modal-sheet { transform: translateY(0); }
+.sp-profile-modal-handle { width: 36px; height: 4px; border-radius: 2px; background: #E5E5EA; margin: 12px auto 16px; }

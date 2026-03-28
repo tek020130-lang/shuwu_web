@@ -1,66 +1,103 @@
 import { posts as initialPosts, ticker, topics, userState } from '../data/mock.js';
 
-const NFT_LINE_COLOR = { genesis: '#C9A84C', premium: '#A3E635', basic: '#8E8E93', none: 'transparent' };
-const TABS = ['关注', '热门', '快讯', '社区'];
-const POST_COST = 0.5;
+const TABS = [
+  { id: '热门', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/></svg>` },
+  { id: '社区', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>` },
+  { id: '快讯', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>` },
+  { id: '社区', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>` },
+];
 
+const REAL_TABS = ['关注', '热门', '快讯', '社区'];
+
+const POST_COST = 0.5;
 let posts = initialPosts.map(p => ({ ...p }));
 let activeTab = '热门';
 let postIdCounter = posts.length + 1;
 
-function avatarInitial(name) { return name.charAt(0).toUpperCase(); }
+const TAB_ICONS = {
+  关注: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>`,
+  热门: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/></svg>`,
+  快讯: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg>`,
+  社区: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`,
+};
 
-function renderTickerItem() {
-  const text = ticker.join('　·　');
+const HOT_TOPICS = [
+  { tag: 'NFT市场分析', count: '12.5k' },
+  { tag: 'SWORL生态', count: '8.2k' },
+  { tag: '数字藏品', count: '6.8k' },
+  { tag: 'Web3新项目', count: '5.1k' },
+];
+
+const AVATAR_COLORS = ['#8B5CF6','#3B82F6','#10B981','#F59E0B','#EF4444','#EC4899','#6366F1'];
+
+function avatarColor(name) {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
+  return AVATAR_COLORS[Math.abs(h) % AVATAR_COLORS.length];
+}
+
+function renderPost(p) {
+  const color = p.avatarColor || avatarColor(p.userName);
   return `
-    <div class="sq-ticker">
-      <div class="sq-ticker-inner">
-        <span>${text}　·　${text}</span>
+    <div class="sq-post-new glass-card" data-id="${p.id}">
+      <div class="sq-author-row">
+        <div class="sq-author-info">
+          <div class="sq-avatar-img" style="background:${color}">${p.userName.charAt(0).toUpperCase()}</div>
+          <div>
+            <div class="sq-author-name-row">
+              <span class="sq-author-name">${p.userName}</span>
+              ${p.verified ? `<svg viewBox="0 0 24 24" fill="#8B5CF6" style="width:14px;height:14px"><path d="M12 1l2.5 2.5h3.5v3.5l2.5 2.5-2.5 2.5v3.5h-3.5L12 18l-2.5-2.5H6v-3.5L3.5 9.5 6 7V3.5h3.5L12 1z"/><path d="M9 12l2 2 4-4" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>` : ''}
+              <span class="sq-author-level">Lv.${p.nftTier === 'genesis' ? 5 : p.nftTier === 'premium' ? 3 : 1}</span>
+            </div>
+            <span class="sq-post-time">${p.time}</span>
+          </div>
+        </div>
+        <button class="glass-icon" style="width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+        </button>
+      </div>
+      <p class="sq-post-text">${p.content}</p>
+      <div class="sq-post-actions">
+        <button class="sq-action-new sq-like-btn${p.liked ? ' liked' : ''}" data-id="${p.id}">
+          <svg viewBox="0 0 24 24" fill="none" style="width:18px;height:18px">
+            <circle cx="12" cy="12" r="10" fill="url(#sg-${p.id})"/>
+            <path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <defs><linearGradient id="sg-${p.id}" x1="0" y1="0" x2="24" y2="24"><stop stop-color="#8B5CF6"/><stop offset="1" stop-color="#A78BFA"/></linearGradient></defs>
+          </svg>
+          <span class="sq-value">${p.value.toFixed(1)}</span>
+          ${!p.liked ? '<span style="font-size:10px;opacity:0.6">+1 SWORL</span>' : ''}
+        </button>
+        <button class="sq-action-new">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:18px;height:18px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          <span>${p.comments}</span>
+        </button>
+        <button class="sq-action-new">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:18px;height:18px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+          <span>${p.reposts}</span>
+        </button>
       </div>
     </div>
   `;
 }
 
-function renderPost(p) {
-  const lineColor = NFT_LINE_COLOR[p.nftTier] || 'transparent';
-  const hasLine = p.nftTier !== 'none';
+function renderHotTopics() {
   return `
-    <div class="sq-post" data-id="${p.id}">
-      <div class="sq-post-left">
-        ${hasLine ? `<div class="sq-nft-line" style="background:${lineColor}"></div>` : '<div class="sq-nft-line transparent"></div>'}
-        <div class="sq-avatar" style="background:${p.avatarColor}">${avatarInitial(p.userName)}</div>
+    <div class="sq-hot-topics">
+      <div class="sq-hot-header">
+        <span class="sq-hot-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h16M4 15h16M10 3L8 21M16 3l-2 18"/></svg>
+          热门话题
+        </span>
+        <span class="sq-hot-more">更多 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><path d="M9 18l6-6-6-6"/></svg></span>
       </div>
-      <div class="sq-post-body">
-        <div class="sq-post-header">
-          <span class="sq-username">${p.userName}</span>
-          ${p.verified ? '<span class="sq-verified">✦</span>' : ''}
-          <span class="sq-time">${p.time}</span>
-        </div>
-        <div class="sq-content">${p.content}</div>
-        <div class="sq-post-footer">
-          <span class="sq-topic">#${p.topic}</span>
-          <div class="sq-actions">
-            <button class="sq-like-btn${p.liked ? ' liked' : ''}" data-id="${p.id}">
-              <svg viewBox="0 0 24 24" fill="${p.liked ? '#C9A84C' : 'none'}" stroke="${p.liked ? '#C9A84C' : 'currentColor'}" stroke-width="1.5">
-                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-              </svg>
-              <span class="sq-value">${p.value.toFixed(1)} S</span>
-            </button>
-            <button class="sq-action-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-              </svg>
-              <span>${p.comments}</span>
-            </button>
-            <button class="sq-action-btn">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <polyline points="17,1 21,5 17,9"/><path d="M3 11V9a4 4 0 014-4h14"/>
-                <polyline points="7,23 3,19 7,15"/><path d="M21 13v2a4 4 0 01-4 4H3"/>
-              </svg>
-              <span>${p.reposts}</span>
-            </button>
+      <div class="sq-hot-scroll">
+        ${HOT_TOPICS.map(t => `
+          <div class="sq-hot-tag glass-card">
+            <span class="sq-hot-tag-hash">#</span>
+            <span class="sq-hot-tag-name">${t.tag}</span>
+            <span class="sq-hot-tag-count">${t.count}</span>
           </div>
-        </div>
+        `).join('')}
       </div>
     </div>
   `;
@@ -68,29 +105,32 @@ function renderPost(p) {
 
 function renderFeed(container) {
   const feed = container.querySelector('#sq-feed');
-  const filtered = activeTab === '快讯'
-    ? []
-    : posts;
-
-  let html = '';
-  filtered.forEach((p, i) => {
-    // Insert ticker every 4 posts
-    if (i > 0 && i % 4 === 0) html += renderTickerItem();
+  if (activeTab === '快讯') {
+    feed.innerHTML = `<div class="sq-ticker-page" style="padding:16px 16px">${ticker.map(t => `<div class="sq-ticker-item">${t}</div>`).join('')}</div>`;
+    return;
+  }
+  let html = renderHotTopics();
+  posts.forEach((p, i) => {
+    if (i > 0 && i % 4 === 0) {
+      html += `<div class="sq-ticker" style="margin:0 16px"><div class="sq-ticker-inner"><span>${ticker.join('　·　')}　·　${ticker.join('　·　')}</span></div></div>`;
+    }
     html += renderPost(p);
   });
-
-  if (activeTab === '快讯') {
-    html = `<div class="sq-ticker-page">${ticker.map(t => `<div class="sq-ticker-item">${t}</div>`).join('')}</div>`;
-  }
-
-  feed.innerHTML = html;
+  feed.innerHTML = `<div style="padding:12px 16px;display:flex;flex-direction:column;gap:12px">${html}</div>`;
 }
 
 export function renderSquare(container) {
   container.innerHTML = `
     <div class="sq-header">
       <div class="sq-tabs" id="sq-tabs">
-        ${TABS.map(t => `<button class="sq-tab${t === activeTab ? ' active' : ''}" data-tab="${t}">${t}</button>`).join('')}
+        ${REAL_TABS.map(t => `
+          <button class="sq-tab${t === activeTab ? ' active' : ''}" data-tab="${t}">
+            <span style="display:flex;align-items:center;gap:5px;justify-content:center">
+              <span style="width:14px;height:14px;display:flex;align-items:center;justify-content:center">${TAB_ICONS[t]}</span>
+              ${t}
+            </span>
+          </button>
+        `).join('')}
         <div class="sq-tab-line" id="sq-tab-line"></div>
       </div>
     </div>
@@ -103,9 +143,8 @@ export function renderSquare(container) {
   `;
 
   renderFeed(container);
-  initTabLine(container);
+  requestAnimationFrame(() => moveTabLine(container));
 
-  // Tab switching
   container.querySelector('#sq-tabs').addEventListener('click', e => {
     const btn = e.target.closest('.sq-tab');
     if (!btn) return;
@@ -115,7 +154,6 @@ export function renderSquare(container) {
     renderFeed(container);
   });
 
-  // Like / tip
   container.addEventListener('click', e => {
     const likeBtn = e.target.closest('.sq-like-btn');
     if (likeBtn) {
@@ -125,23 +163,15 @@ export function renderSquare(container) {
       post.liked = !post.liked;
       post.value = post.liked ? +(post.value + 0.5).toFixed(1) : +(post.value - 0.5).toFixed(1);
       likeBtn.classList.toggle('liked', post.liked);
-      likeBtn.querySelector('svg').setAttribute('fill', post.liked ? '#C9A84C' : 'none');
-      likeBtn.querySelector('svg').setAttribute('stroke', post.liked ? '#C9A84C' : 'currentColor');
-      likeBtn.querySelector('.sq-value').textContent = post.value.toFixed(1) + ' S';
-      // Animate
-      likeBtn.style.transform = 'scale(1.3)';
+      likeBtn.querySelector('.sq-value').textContent = post.value.toFixed(1);
+      likeBtn.style.transform = 'scale(1.25)';
       setTimeout(() => likeBtn.style.transform = '', 200);
     }
   });
 
-  // Compose
   container.querySelector('#sq-compose-btn').addEventListener('click', () => {
     window.dispatchEvent(new CustomEvent('openCompose'));
   });
-}
-
-function initTabLine(container) {
-  requestAnimationFrame(() => moveTabLine(container));
 }
 
 function moveTabLine(container) {
