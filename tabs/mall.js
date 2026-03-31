@@ -1,12 +1,10 @@
 import { mallProducts, mallCollections, newDrops } from '../data/mock.js';
 
 const DATE_FILTERS = [
-  { date: '03/28', day: '今天' },
-  { date: '03/29', day: '明天' },
-  { date: '03/30', day: '周日' },
-  { date: '03/31', day: '周一' },
-  { date: '04/01', day: '周二' },
-  { date: '04/02', day: '周三' },
+  { date: '全部', day: '全部' },
+  { date: '3月', day: '3月' },
+  { date: '2月', day: '2月' },
+  { date: '1月', day: '1月' },
 ];
 
 let activeCollection = 'all';
@@ -67,8 +65,7 @@ function renderFeed(container) {
 function renderDateCol(container) {
   container.querySelector('#mall-date-col').innerHTML = DATE_FILTERS.map((d, i) => `
     <button class="mall-date-btn-new glass-icon${i === 0 ? ' active' : ''}" data-date="${d.date}">
-      <div class="date-day">${d.day}</div>
-      <div class="date-num">${d.date}</div>
+      <div class="date-num">${d.day}</div>
     </button>
   `).join('');
 }

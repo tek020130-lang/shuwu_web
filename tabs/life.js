@@ -167,6 +167,23 @@ export async function renderLife(container) {
       const id = parseInt(card.dataset.id);
       const merchant = merchantList.find(m => m.id === id) || mockMerchants.find(m => m.id === id);
       if (merchant) window.dispatchEvent(new CustomEvent('openPayment', { detail: merchant }));
+      return;
+    }
+
+    // 金刚区点击 → 触发对应分类筛选
+    const quickItem = e.target.closest('.life-quick-item');
+    if (quickItem) {
+      const label = quickItem.querySelector('.life-quick-label').textContent.trim();
+      const catMap = { '娱乐中心': '娱乐场所', '文创工坊': '潮玩周边', '餐饮消费': '餐饮消费', '数物限定': '数物限定', '旗舰店': '旗舰店', '精选推荐': 'all', '附近商户': 'all' };
+      const cat = catMap[label] || 'all';
+      activeCategory = cat;
+      container.querySelectorAll('.cat-item').forEach(el => el.classList.toggle('active', el.dataset.cat === activeCategory));
+      let list = mockMerchants.filter(m => cat === 'all' || m.category === cat);
+      try { list = await api.getMerchants(cat !== 'all' ? { category: cat } : {}); } catch { /* use mock */ }
+      const feed = container.querySelector('#merchant-feed');
+      const tmp = document.createElement('div');
+      tmp.innerHTML = renderFeed(list);
+      feed.replaceWith(tmp.querySelector('#merchant-feed'));
     }
   });
 }
