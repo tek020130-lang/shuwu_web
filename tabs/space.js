@@ -275,44 +275,51 @@ async function renderSpaceMain(container) {
       </div>
     </div>
 
-    <!-- 数藏空间弹窗 全屏覆盖 -->
-    <div class="sp-nft-modal hidden" id="sp-nft-modal">
-      <div class="sp-nft-modal-sheet">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:56px 20px 12px;flex-shrink:0">
-          <div style="font-size:20px;font-weight:700">数藏空间</div>
-          <button id="sp-nft-modal-close" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none" class="glass-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-        </div>
-        <div style="font-size:13px;color:var(--text-sub);text-align:center;padding-bottom:16px;flex-shrink:0">共 ${nfts.length} 件数字藏品</div>
-        <div class="sp-nft-modal-grid">
-          ${nfts.map(nft => `
-            <div class="sp-nft-modal-card glass-card" data-nft-id="${nft.id}">
-              <div class="sp-nft-modal-img">
-                <div style="width:100%;aspect-ratio:1/1;background:linear-gradient(145deg,${nft.color}33,${nft.color}11);display:flex;align-items:center;justify-content:center">
-                  <div style="font-size:32px;color:${nft.color}">✦</div>
-                </div>
-              </div>
-              <div class="sp-nft-modal-info">
-                <div class="sp-nft-modal-name">${nft.name}</div>
-                <div class="sp-nft-modal-collection">${nft.tier === 'genesis' ? '创世' : nft.tier === 'premium' ? '高阶' : '基础'}</div>
-                <div class="sp-nft-modal-price">
-                  <svg viewBox="0 0 24 24" fill="none" style="width:14px;height:14px"><circle cx="12" cy="12" r="10" fill="url(#sg-nft${nft.id})"/><path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4" stroke="white" stroke-width="2" stroke-linecap="round"/><defs><linearGradient id="sg-nft${nft.id}" x1="0" y1="0" x2="24" y2="24"><stop stop-color="#8B5CF6"/><stop offset="1" stop-color="#A78BFA"/></linearGradient></defs></svg>
-                  分红加成 ${nft.dividendBoost}
-                </div>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      </div>
-    </div>
-
     <!-- NFT 全屏详情 -->
     <div class="nft-fullscreen-overlay" id="nft-fullscreen-overlay">
       <button class="nft-fullscreen-close" id="nft-fullscreen-close">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
       </button>
       <div class="nft-fullscreen-card" id="nft-fullscreen-card"></div>
+    </div>
+  `;
+
+  // 把数藏弹窗挂到 body，避免在滚动容器内显示
+  let nftModal = document.getElementById('sp-nft-modal');
+  if (!nftModal) {
+    nftModal = document.createElement('div');
+    nftModal.id = 'sp-nft-modal';
+    nftModal.className = 'sp-nft-modal hidden';
+    document.body.appendChild(nftModal);
+  }
+  nftModal.innerHTML = `
+    <div class="sp-nft-modal-sheet">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:56px 20px 12px;flex-shrink:0">
+        <div style="font-size:20px;font-weight:700">数藏空间</div>
+        <button id="sp-nft-modal-close" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none" class="glass-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div style="font-size:13px;color:var(--text-sub);text-align:center;padding-bottom:16px;flex-shrink:0">共 ${nfts.length} 件数字藏品</div>
+      <div class="sp-nft-modal-grid">
+        ${nfts.map(nft => `
+          <div class="sp-nft-modal-card glass-card" data-nft-id="${nft.id}">
+            <div class="sp-nft-modal-img">
+              <div style="width:100%;aspect-ratio:1/1;background:linear-gradient(145deg,${nft.color}33,${nft.color}11);display:flex;align-items:center;justify-content:center">
+                <div style="font-size:32px;color:${nft.color}">✦</div>
+              </div>
+            </div>
+            <div class="sp-nft-modal-info">
+              <div class="sp-nft-modal-name">${nft.name}</div>
+              <div class="sp-nft-modal-collection">${nft.tier === 'genesis' ? '创世' : nft.tier === 'premium' ? '高阶' : '基础'}</div>
+              <div class="sp-nft-modal-price">
+                <svg viewBox="0 0 24 24" fill="none" style="width:14px;height:14px"><circle cx="12" cy="12" r="10" fill="url(#sg-nft${nft.id})"/><path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4" stroke="white" stroke-width="2" stroke-linecap="round"/><defs><linearGradient id="sg-nft${nft.id}" x1="0" y1="0" x2="24" y2="24"><stop stop-color="#8B5CF6"/><stop offset="1" stop-color="#A78BFA"/></linearGradient></defs></svg>
+                分红加成 ${nft.dividendBoost}
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
     </div>
   `;
 
@@ -337,12 +344,11 @@ async function renderSpaceMain(container) {
     else if (action === 'swap') window.dispatchEvent(new CustomEvent('openSwapInfo'));
   });
 
-  // 数藏入口
-  const nftModal = container.querySelector('#sp-nft-modal');
+  // 数藏入口 — nftModal 已挂到 body
   const openNFTModal = () => nftModal.classList.remove('hidden');
   const closeNFTModal = () => nftModal.classList.add('hidden');
   container.querySelector('#sp-nft-entry').addEventListener('click', openNFTModal);
-  container.querySelector('#sp-nft-modal-close').addEventListener('click', closeNFTModal);
+  nftModal.querySelector('#sp-nft-modal-close').addEventListener('click', closeNFTModal);
 
   // 菜单点击
   container.querySelector('.sp-menu-list').addEventListener('click', e => {
@@ -356,7 +362,7 @@ async function renderSpaceMain(container) {
   const fsCard = container.querySelector('#nft-fullscreen-card');
   container.querySelector('#nft-fullscreen-close').addEventListener('click', () => fsOverlay.classList.remove('active'));
   fsOverlay.addEventListener('click', e => { if (e.target === fsOverlay) fsOverlay.classList.remove('active'); });
-  container.querySelector('#sp-nft-modal').addEventListener('click', e => {
+  nftModal.addEventListener('click', e => {
     const card = e.target.closest('.sp-nft-modal-card');
     if (!card) return;
     const nft = nfts.find(n => n.id === +card.dataset.nftId);
