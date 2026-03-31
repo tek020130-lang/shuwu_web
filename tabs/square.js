@@ -158,18 +158,15 @@ export function renderSquare(container) {
   if (!btnGroup) {
     btnGroup = document.createElement('div');
     btnGroup.id = 'sq-float-btns';
-    btnGroup.style.cssText = 'position:fixed;right:20px;bottom:calc(var(--nav-h) + 20px);display:flex;flex-direction:column;gap:10px;z-index:200';
+    btnGroup.style.cssText = 'position:fixed;right:16px;top:50%;transform:translateY(-50%);z-index:200';
     btnGroup.innerHTML = `
-      <button id="sq-my-posts-btn" style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.95);box-shadow:0 4px 20px rgba(0,0,0,0.1),0 1px 0 inset rgba(255,255,255,1);display:flex;align-items:center;justify-content:center;cursor:pointer">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:20px;height:20px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      </button>
       <button id="sq-compose-btn" style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.95);box-shadow:0 4px 20px rgba(0,0,0,0.12),0 1px 0 inset rgba(255,255,255,1);display:flex;align-items:center;justify-content:center;cursor:pointer">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:22px;height:22px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       </button>
     `;
     document.body.appendChild(btnGroup);
   }
-  btnGroup.style.display = 'flex';
+  btnGroup.style.display = 'block';
 
   renderFeed(container);
   requestAnimationFrame(() => moveTabLine(container));
@@ -209,13 +206,8 @@ export function renderSquare(container) {
     }
   });
 
-  container.querySelector('#sq-compose-btn').addEventListener('click', () => {
+  document.getElementById('sq-compose-btn').addEventListener('click', () => {
     window.dispatchEvent(new CustomEvent('openCompose'));
-  });
-
-  // 个人发帖中心
-  container.querySelector('#sq-my-posts-btn').addEventListener('click', () => {
-    openPostsCenter(container, '我的发帖', posts.filter(p => p.userId === 'me'));
   });
 
   const backdrop = container.querySelector('#sq-posts-center-backdrop');

@@ -31,7 +31,7 @@ function switchTab(tabId) {
   if (activeBtn) { activeBtn.classList.add('active'); moveBlob(activeBtn); }
   // 广场浮动按钮只在广场 tab 显示
   const floatBtns = document.getElementById('sq-float-btns');
-  if (floatBtns) floatBtns.style.display = tabId === 'square' ? 'flex' : 'none';
+  if (floatBtns) floatBtns.style.display = tabId === 'square' ? 'block' : 'none';
 }
 
 document.querySelectorAll('.nav-item[data-tab]').forEach(btn => {

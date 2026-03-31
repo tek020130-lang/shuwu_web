@@ -33,7 +33,7 @@ html, body { height: 100%; overflow: hidden; }
 body {
   font-family: -apple-system, 'PingFang SC', 'SF Pro Display', sans-serif;
   color: var(--text); -webkit-font-smoothing: antialiased;
-  background: #e8e8ed;
+  background: #f2f2f7;
   background-image: none;
   background-attachment: fixed;
 }
@@ -1945,9 +1945,10 @@ img { display: block; width: 100%; object-fit: cover; }
   background: #fff;
   transform: translateY(100%);
   transition: transform 0.4s var(--ease);
+  pointer-events: none;
 }
-.sp-nft-modal.hidden { transform: translateY(100%); pointer-events: none; visibility: hidden; }
-.sp-nft-modal:not(.hidden) { transform: translateY(0); visibility: visible; }
+.sp-nft-modal.hidden { transform: translateY(100%); }
+.sp-nft-modal:not(.hidden) { transform: translateY(0); pointer-events: auto; }
 .sp-nft-modal-backdrop { display: none; }
 .sp-nft-modal-sheet {
   flex: 1; display: flex; flex-direction: column; overflow: hidden;
