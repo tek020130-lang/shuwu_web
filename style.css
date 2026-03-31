@@ -1941,14 +1941,11 @@ img { display: block; width: 100%; object-fit: cover; }
 /* 空间 数藏全屏弹窗 */
 .sp-nft-modal {
   position: fixed; inset: 0; z-index: 350;
-  display: flex; flex-direction: column;
+  display: none; flex-direction: column;
   background: #fff;
-  transform: translateY(100%);
-  transition: transform 0.4s var(--ease);
-  pointer-events: none;
 }
-.sp-nft-modal.hidden { transform: translateY(100%); }
-.sp-nft-modal:not(.hidden) { transform: translateY(0); pointer-events: auto; }
+.sp-nft-modal.hidden { display: none; }
+.sp-nft-modal:not(.hidden) { display: flex; }
 .sp-nft-modal-backdrop { display: none; }
 .sp-nft-modal-sheet {
   flex: 1; display: flex; flex-direction: column; overflow: hidden;
