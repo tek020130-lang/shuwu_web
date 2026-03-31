@@ -33,12 +33,8 @@ html, body { height: 100%; overflow: hidden; }
 body {
   font-family: -apple-system, 'PingFang SC', 'SF Pro Display', sans-serif;
   color: var(--text); -webkit-font-smoothing: antialiased;
-  background: #f0f0f5;
-  background-image:
-    radial-gradient(ellipse 90% 60% at 20% 10%, rgba(220,210,255,0.45), transparent),
-    radial-gradient(ellipse 70% 50% at 80% 20%, rgba(255,230,180,0.35), transparent),
-    radial-gradient(ellipse 60% 60% at 10% 70%, rgba(180,240,220,0.3), transparent),
-    radial-gradient(ellipse 50% 40% at 90% 80%, rgba(200,220,255,0.3), transparent);
+  background: #e8e8ed;
+  background-image: none;
   background-attachment: fixed;
 }
 
@@ -1945,23 +1941,18 @@ img { display: block; width: 100%; object-fit: cover; }
 /* 空间 数藏全屏弹窗 */
 .sp-nft-modal {
   position: fixed; inset: 0; z-index: 350;
-  display: flex; flex-direction: column; justify-content: flex-end;
-  transition: opacity 0.3s var(--ease);
-}
-.sp-nft-modal.hidden { opacity: 0; pointer-events: none; visibility: hidden; }
-.sp-nft-modal-backdrop {
-  position: absolute; inset: 0;
-  background: rgba(0,0,0,0.35); backdrop-filter: blur(6px);
-}
-.sp-nft-modal-sheet {
-  position: relative; z-index: 1;
-  background: #fff; border-radius: 28px 28px 0 0;
-  max-height: 85vh; overflow: hidden;
+  display: flex; flex-direction: column;
+  background: #fff;
   transform: translateY(100%);
   transition: transform 0.4s var(--ease);
-  display: flex; flex-direction: column;
 }
-.sp-nft-modal:not(.hidden) .sp-nft-modal-sheet { transform: translateY(0); }
+.sp-nft-modal.hidden { transform: translateY(100%); pointer-events: none; visibility: hidden; }
+.sp-nft-modal:not(.hidden) { transform: translateY(0); visibility: visible; }
+.sp-nft-modal-backdrop { display: none; }
+.sp-nft-modal-sheet {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
+  transform: none !important;
+}
 .sp-nft-modal-handle { width: 36px; height: 4px; border-radius: 2px; background: #E5E5EA; margin: 12px auto 0; flex-shrink: 0; }
 .sp-nft-modal-title { font-size: 20px; font-weight: 700; text-align: center; padding: 16px 24px 4px; flex-shrink: 0; }
 .sp-nft-modal-sub { font-size: 13px; color: var(--text-sub); text-align: center; padding-bottom: 16px; flex-shrink: 0; }

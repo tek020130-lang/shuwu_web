@@ -275,13 +275,16 @@ async function renderSpaceMain(container) {
       </div>
     </div>
 
-    <!-- 数藏空间弹窗 -->
+    <!-- 数藏空间弹窗 全屏覆盖 -->
     <div class="sp-nft-modal hidden" id="sp-nft-modal">
-      <div class="sp-nft-modal-backdrop" id="sp-nft-modal-backdrop"></div>
       <div class="sp-nft-modal-sheet">
-        <div class="sp-nft-modal-handle"></div>
-        <div class="sp-nft-modal-title">数藏空间</div>
-        <div class="sp-nft-modal-sub">共 ${nfts.length} 件数字藏品</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:56px 20px 12px;flex-shrink:0">
+          <div style="font-size:20px;font-weight:700">数藏空间</div>
+          <button id="sp-nft-modal-close" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none" class="glass-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div style="font-size:13px;color:var(--text-sub);text-align:center;padding-bottom:16px;flex-shrink:0">共 ${nfts.length} 件数字藏品</div>
         <div class="sp-nft-modal-grid">
           ${nfts.map(nft => `
             <div class="sp-nft-modal-card glass-card" data-nft-id="${nft.id}">
@@ -339,7 +342,7 @@ async function renderSpaceMain(container) {
   const openNFTModal = () => nftModal.classList.remove('hidden');
   const closeNFTModal = () => nftModal.classList.add('hidden');
   container.querySelector('#sp-nft-entry').addEventListener('click', openNFTModal);
-  container.querySelector('#sp-nft-modal-backdrop').addEventListener('click', closeNFTModal);
+  container.querySelector('#sp-nft-modal-close').addEventListener('click', closeNFTModal);
 
   // 菜单点击
   container.querySelector('.sp-menu-list').addEventListener('click', e => {

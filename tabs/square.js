@@ -122,7 +122,14 @@ function renderFeed(container) {
 export function renderSquare(container) {
   container.innerHTML = `
     <div class="sq-header">
-      <div class="sq-tabs" id="sq-tabs">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px 10px">
+        <button id="sq-profile-btn" style="width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none" class="glass-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><circle cx="12" cy="7" r="3.5"/><path d="M5 20c0-3.5 3.1-6 7-6s7 2.5 7 6"/></svg>
+        </button>
+        <div style="font-size:15px;font-weight:600;color:var(--text)">广场</div>
+        <div style="width:36px"></div>
+      </div>
+      <div class="sq-tabs" id="sq-tabs" style="margin:0 16px 14px">
         ${REAL_TABS.map(t => `
           <button class="sq-tab${t === activeTab ? ' active' : ''}" data-tab="${t}">
             <span style="display:flex;align-items:center;gap:5px;justify-content:center">
@@ -135,17 +142,6 @@ export function renderSquare(container) {
       </div>
     </div>
     <div id="sq-feed" class="sq-feed"></div>
-    <!-- 右侧固定按钮组 -->
-    <div style="position:fixed;right:20px;bottom:calc(var(--nav-h) + 20px);display:flex;flex-direction:column;gap:10px;z-index:90">
-      <button id="sq-my-posts-btn" style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(0,0,0,0.08);box-shadow:0 4px 20px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;cursor:pointer">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:20px;height:20px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-      </button>
-      <button class="sq-compose-btn" id="sq-compose-btn" style="position:static;width:52px;height:52px">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-        </svg>
-      </button>
-    </div>
     <!-- 发帖中心 overlay -->
     <div id="sq-posts-center" style="position:fixed;inset:0;z-index:300;display:none;flex-direction:column">
       <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);backdrop-filter:blur(6px)" id="sq-posts-center-backdrop"></div>
@@ -156,6 +152,24 @@ export function renderSquare(container) {
       </div>
     </div>
   `;
+
+  // 把按钮组挂到 body，避免被 overflow:hidden 裁剪
+  let btnGroup = document.getElementById('sq-float-btns');
+  if (!btnGroup) {
+    btnGroup = document.createElement('div');
+    btnGroup.id = 'sq-float-btns';
+    btnGroup.style.cssText = 'position:fixed;right:20px;bottom:calc(var(--nav-h) + 20px);display:flex;flex-direction:column;gap:10px;z-index:200';
+    btnGroup.innerHTML = `
+      <button id="sq-my-posts-btn" style="width:48px;height:48px;border-radius:50%;background:rgba(255,255,255,0.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.95);box-shadow:0 4px 20px rgba(0,0,0,0.1),0 1px 0 inset rgba(255,255,255,1);display:flex;align-items:center;justify-content:center;cursor:pointer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:20px;height:20px"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      </button>
+      <button id="sq-compose-btn" style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.95);box-shadow:0 4px 20px rgba(0,0,0,0.12),0 1px 0 inset rgba(255,255,255,1);display:flex;align-items:center;justify-content:center;cursor:pointer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:22px;height:22px"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+    `;
+    document.body.appendChild(btnGroup);
+  }
+  btnGroup.style.display = 'flex';
 
   renderFeed(container);
   requestAnimationFrame(() => moveTabLine(container));
