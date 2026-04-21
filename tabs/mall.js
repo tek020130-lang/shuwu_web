@@ -9,6 +9,7 @@ const DATE_FILTERS = [
 
 let activeCollection = 'all';
 let activeDate = '全部';
+let spiralObserver = null;
 
 // SWORL 图标 SVG
 function sworlIcon(id = '') {
@@ -21,28 +22,30 @@ function typeLabel(type) {
     : '<span class="mall-tag phygital-tag">含实物</span>';
 }
 
-function renderProductCard(p) {
+function renderProductCard(p, index) {
+  const side = index % 2 === 0 ? 'left' : 'right';
   return `
-    <div class="mall-product-card-new glass-card" data-id="${p.id}">
-      <div class="prod-img">
-        <img src="${p.image}" alt="${p.name}" loading="lazy" />
-        ${p.limited ? '<div class="prod-badge-new">限定</div>' : ''}
-        <div class="prod-edition-badge glass" style="position:absolute;top:10px;right:10px;padding:3px 9px;border-radius:999px;font-size:10px;font-weight:500">${typeLabel(p.type)}</div>
-        <button class="prod-like-btn glass" data-id="${p.id}" style="position:absolute;bottom:10px;right:10px;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:none;cursor:pointer">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:15px;height:15px"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-        </button>
-      </div>
-      <div class="prod-info">
-        <div class="prod-name">${p.name}</div>
-        <div class="prod-creator">${p.series || p.creator}</div>
-        <div class="prod-price-row">
-          <div class="prod-price">
-            ${sworlIcon(p.id)}
-            ${p.price.toLocaleString()}
+    <div class="mall-spiral-item ${side}" data-index="${index}">
+      <div class="mall-spiral-card glass-card" data-id="${p.id}">
+        <div class="spiral-card-img">
+          <img src="${p.image}" alt="${p.name}" loading="lazy" />
+          ${p.limited ? '<div class="spiral-badge-limited">限定</div>' : ''}
+          <div class="spiral-badge-type">${typeLabel(p.type)}</div>
+        </div>
+        <div class="spiral-card-body">
+          <div class="spiral-card-meta">
+            <span class="spiral-card-series">${p.series || p.creator}</span>
+            <span class="spiral-card-index">#${String(index + 1).padStart(3, '0')}</span>
           </div>
-          <div class="prod-likes">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:12px;height:12px"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-            ${Math.floor(Math.random() * 2000 + 100)}
+          <div class="spiral-card-name">${p.name}</div>
+          <div class="spiral-card-footer">
+            <div class="spiral-card-price">
+              ${sworlIcon(p.id)}
+              <span>${p.price.toLocaleString()}</span>
+            </div>
+            <button class="spiral-like-btn prod-like-btn" data-id="${p.id}">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -58,8 +61,25 @@ function getFiltered() {
   });
 }
 
+function initSpiralObserver(container) {
+  if (spiralObserver) spiralObserver.disconnect();
+  spiralObserver = new IntersectionObserver((entries) => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        const delay = parseInt(e.target.dataset.index || 0) * 60;
+        setTimeout(() => e.target.classList.add('visible'), Math.min(delay, 300));
+        spiralObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  container.querySelectorAll('.mall-spiral-item').forEach(el => spiralObserver.observe(el));
+}
+
 function renderFeed(container) {
-  container.querySelector('#mall-product-grid').innerHTML = getFiltered().map(renderProductCard).join('');
+  const products = getFiltered();
+  const grid = container.querySelector('#mall-product-grid');
+  grid.innerHTML = `<div class="mall-spiral-container">${products.map((p, i) => renderProductCard(p, i)).join('')}</div>`;
+  initSpiralObserver(grid);
 }
 
 function renderDateCol(container) {
@@ -211,15 +231,16 @@ export function renderMall(container) {
         ${mallCollections.map(c => `<button class="mall-col-tab" data-col="${c}">${c}</button>`).join('')}
       </div>
 
-      <!-- 日期 + 商品瀑布流 -->
-      <div class="mall-body" style="padding:0 0 0 16px">
-        <div class="mall-date-col-new" id="mall-date-col"></div>
-        <div class="mall-product-grid" id="mall-product-grid"></div>
+      <!-- 日期筛选 pill -->
+      <div class="mall-date-pills" id="mall-date-col">
+        ${DATE_FILTERS.map((d, i) => `<button class="mall-date-pill${i === 0 ? ' active' : ''}" data-date="${d.date}">${d.day}</button>`).join('')}
       </div>
+
+      <!-- 螺旋商品流 -->
+      <div id="mall-product-grid"></div>
     </div>
   `;
 
-  renderDateCol(container);
   renderFeed(container);
 
   container.querySelector('#mall-search-trigger').addEventListener('click', () => {
@@ -227,7 +248,7 @@ export function renderMall(container) {
   });
 
   container.querySelector('#mall-product-grid').addEventListener('click', e => {
-    const card = e.target.closest('.mall-product-card-new');
+    const card = e.target.closest('.mall-spiral-card');
     if (card && !e.target.closest('.prod-like-btn')) openDetail(+card.dataset.id);
   });
 
@@ -240,10 +261,10 @@ export function renderMall(container) {
   });
 
   container.querySelector('#mall-date-col').addEventListener('click', e => {
-    const btn = e.target.closest('.mall-date-btn-new');
+    const btn = e.target.closest('.mall-date-pill');
     if (!btn) return;
     activeDate = btn.dataset.date;
-    container.querySelectorAll('.mall-date-btn-new').forEach(b => b.classList.toggle('active', b.dataset.date === activeDate));
+    container.querySelectorAll('.mall-date-pill').forEach(b => b.classList.toggle('active', b.dataset.date === activeDate));
     renderFeed(container);
   });
 

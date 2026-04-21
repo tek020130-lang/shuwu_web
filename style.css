@@ -13,10 +13,12 @@
   --gold-glow: rgba(201,168,76,0.25);
   --sworl: #A3E635;
   --sworl-dim: rgba(163,230,53,0.12);
-  --shadow-card: 0 2px 12px rgba(0,0,0,0.07), 0 1px 3px rgba(0,0,0,0.05);
-  --shadow-sm: 0 1px 4px rgba(0,0,0,0.08);
+  --shadow-card: 0 4px 20px rgba(0,0,0,0.1), 0 1px 3px rgba(0,0,0,0.06);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.1);
+  --shadow-deep: 0 8px 40px rgba(0,0,0,0.14), 0 2px 8px rgba(0,0,0,0.08);
   --nav-h: 72px;
-  --radius-card: 18px;
+  --radius-card: 20px;
+  --radius-xl: 28px;
   --radius-pill: 999px;
   --ease: cubic-bezier(0.2, 1, 0.2, 1);
   /* Liquid Glass */
@@ -146,11 +148,12 @@ img { display: block; width: 100%; object-fit: cover; }
   overflow-y: auto; overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
   opacity: 0; pointer-events: none;
-  transform: translateY(12px);
-  transition: opacity 0.3s var(--ease), transform 0.3s var(--ease);
+  transform: translateY(10px) translateZ(0);
+  will-change: opacity, transform;
+  transition: opacity 0.2s ease, transform 0.2s ease;
   padding-bottom: calc(var(--nav-h) + 20px);
 }
-.tab-page.active { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.tab-page.active { opacity: 1; pointer-events: auto; transform: translateY(0) translateZ(0); }
 
 /* ── Placeholder Pages ── */
 .placeholder-page {
@@ -441,13 +444,13 @@ img { display: block; width: 100%; object-fit: cover; }
   display: flex; flex-direction: column; gap: 16px;
 }
 .merchant-card {
-  border-radius: 24px; overflow: hidden;
+  border-radius: var(--radius-xl); overflow: hidden;
   position: relative;
-  background: linear-gradient(165deg, rgba(255,255,255,0.9) 0%, rgba(252,253,255,0.7) 40%, rgba(255,255,255,0.85) 100%);
+  background: linear-gradient(165deg, rgba(255,255,255,0.95) 0%, rgba(252,253,255,0.8) 40%, rgba(255,255,255,0.92) 100%);
   backdrop-filter: blur(32px) saturate(180%);
   -webkit-backdrop-filter: blur(32px) saturate(180%);
-  border: 1px solid rgba(255,255,255,0.95);
-  box-shadow: 0 4px 24px rgba(80,90,120,0.05), 0 1px 0 inset rgba(255,255,255,1);
+  border: 1px solid rgba(255,255,255,0.98);
+  box-shadow: var(--shadow-card), 0 1px 0 inset rgba(255,255,255,1);
   transition: transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
   cursor: pointer;
 }
@@ -456,12 +459,12 @@ img { display: block; width: 100%; object-fit: cover; }
   box-shadow: 0 4px 24px var(--gold-glow), 0 1px 0 inset rgba(240,220,160,0.5);
 }
 .merchant-card:active { transform: scale(0.98); }
-.card-img { width: 100%; height: 176px; overflow: hidden; position: relative; }
+.card-img { width: 100%; height: 200px; overflow: hidden; position: relative; }
 .card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s var(--ease); }
 .merchant-card:active .card-img img { transform: scale(1.03); }
 .card-body { padding: 16px 20px 20px; }
 .card-name-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-.card-name { font-size: 16px; font-weight: 600; color: var(--text); }
+.card-name { font-size: 17px; font-weight: 700; color: var(--text); }
 .card-desc { font-size: 13px; color: var(--text-sub); font-weight: 300; line-height: 1.5; margin-bottom: 10px; }
 .card-rating { font-size: 14px; font-weight: 600; color: var(--gold); }
 .card-meta { display: flex; gap: 12px; margin-bottom: 10px; }
@@ -1993,3 +1996,173 @@ img { display: block; width: 100%; object-fit: cover; }
 }
 .sp-profile-modal:not(.hidden) .sp-profile-modal-sheet { transform: translateY(0); }
 .sp-profile-modal-handle { width: 36px; height: 4px; border-radius: 2px; background: #E5E5EA; margin: 12px auto 16px; }
+
+/* ══════════════════════════════════════
+   金刚区图标 (统一透明 glass 风格)
+══════════════════════════════════════ */
+.life-quick-nav {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 16px 8px; padding: 20px 20px 8px;
+}
+.life-quick-item {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  cursor: pointer;
+}
+.life-quick-icon {
+  width: 56px; height: 56px; border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s var(--ease), box-shadow 0.2s;
+}
+.life-quick-icon:active { transform: scale(0.92); }
+.life-quick-icon svg { width: 24px; height: 24px; color: var(--text); }
+.life-quick-label {
+  font-size: 11px; color: var(--text-sub); font-weight: 400;
+  text-align: center; white-space: nowrap;
+}
+.life-section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px 8px;
+}
+.life-section-title { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+.life-section-more {
+  display: flex; align-items: center; gap: 2px;
+  font-size: 13px; color: var(--text-sub); cursor: pointer;
+}
+.life-section-more svg { width: 14px; height: 14px; }
+.life-search-bar {
+  flex: 1; height: 40px; border-radius: var(--radius-pill);
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 14px; color: var(--text-sub); font-size: 14px;
+  cursor: pointer;
+}
+.life-search-bar svg { width: 15px; height: 15px; flex-shrink: 0; }
+
+/* ══════════════════════════════════════
+   商城螺旋布局
+══════════════════════════════════════ */
+.mall-spiral-container {
+  perspective: 1400px;
+  padding: 8px 16px 24px;
+  display: flex; flex-direction: column; gap: 24px;
+}
+.mall-spiral-item {
+  opacity: 0;
+  will-change: opacity, transform;
+  transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.mall-spiral-item.left  { transform: translateX(-48px) rotateY(18deg) scale(0.92); }
+.mall-spiral-item.right { transform: translateX(48px) rotateY(-18deg) scale(0.92); }
+.mall-spiral-item.visible {
+  opacity: 1;
+  transform: translateX(0) rotateY(0deg) scale(1);
+}
+.mall-spiral-card {
+  border-radius: var(--radius-xl); overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s var(--ease);
+}
+.mall-spiral-card:active { transform: scale(0.97); }
+.spiral-card-img {
+  width: 100%; aspect-ratio: 4/3; overflow: hidden; position: relative;
+}
+.spiral-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s var(--ease); }
+.mall-spiral-card:active .spiral-card-img img { transform: scale(1.04); }
+.spiral-badge-limited {
+  position: absolute; top: 12px; left: 12px;
+  padding: 4px 10px; border-radius: var(--radius-pill);
+  background: var(--gold); color: #1A1A1A;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+}
+.spiral-badge-type {
+  position: absolute; top: 12px; right: 12px;
+}
+.spiral-card-body { padding: 16px 18px 18px; }
+.spiral-card-meta {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 6px;
+}
+.spiral-card-series { font-size: 11px; color: var(--text-sub); font-weight: 400; letter-spacing: 0.3px; }
+.spiral-card-index { font-size: 11px; color: var(--text-sub); font-family: monospace; }
+.spiral-card-name { font-size: 18px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 14px; }
+.spiral-card-footer {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.spiral-card-price {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 17px; font-weight: 700; letter-spacing: -0.3px;
+}
+.spiral-like-btn {
+  width: 38px; height: 38px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; cursor: pointer;
+  transition: transform 0.15s var(--ease);
+}
+.spiral-like-btn:active { transform: scale(0.88); }
+
+/* 日期 pill 筛选 */
+.mall-date-pills {
+  display: flex; gap: 8px; overflow-x: auto;
+  padding: 0 16px 16px; scrollbar-width: none;
+}
+.mall-date-pills::-webkit-scrollbar { display: none; }
+.mall-date-pill {
+  flex-shrink: 0; padding: 7px 16px; border-radius: var(--radius-pill);
+  font-size: 13px; font-weight: 500; color: var(--text-sub);
+  background: var(--bg-card); border: 1px solid var(--border);
+  cursor: pointer; transition: all 0.2s var(--ease);
+}
+.mall-date-pill.active { background: var(--text); color: #fff; border-color: var(--text); }
+
+/* ══════════════════════════════════════
+   广场帖子升级
+══════════════════════════════════════ */
+.sq-post-new {
+  padding: 20px 20px 16px;
+  border-radius: var(--radius-card);
+}
+.sq-author-row {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.sq-author-info { display: flex; align-items: center; gap: 10px; }
+.sq-avatar-img {
+  width: 42px; height: 42px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; font-weight: 700; color: #fff;
+  flex-shrink: 0; cursor: pointer;
+}
+.sq-author-name-row { display: flex; align-items: center; gap: 5px; margin-bottom: 2px; }
+.sq-author-name { font-size: 14px; font-weight: 600; }
+.sq-author-level {
+  font-size: 10px; font-weight: 600; color: var(--gold);
+  background: var(--gold-light); padding: 1px 6px; border-radius: 999px;
+}
+.sq-post-time { font-size: 11px; color: var(--text-sub); font-weight: 300; }
+.sq-post-text {
+  font-size: 15px; line-height: 1.7; color: var(--text);
+  font-weight: 300; margin-bottom: 14px;
+}
+.sq-post-actions {
+  display: flex; align-items: center; gap: 4px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0,0,0,0.05);
+}
+.sq-action-new {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 13px; color: var(--text-sub);
+  background: none; border: none; cursor: pointer;
+  padding: 6px 10px; border-radius: 10px;
+  transition: background 0.15s, color 0.15s, transform 0.15s;
+}
+.sq-action-new:active { transform: scale(0.92); }
+.sq-action-new.sq-like-btn.liked { color: var(--gold); }
+.sq-value { font-size: 13px; font-weight: 500; }
+
+/* ══════════════════════════════════════
+   空间板块升级
+══════════════════════════════════════ */
+.sp-asset-card {
+  border-radius: var(--radius-xl); overflow: hidden; position: relative;
+  background: linear-gradient(155deg, #1a1730 0%, #0f0d1e 50%, #1a1830 100%);
+  box-shadow: 0 20px 80px rgba(20,15,50,0.4), 0 4px 16px rgba(20,15,50,0.3);
+}

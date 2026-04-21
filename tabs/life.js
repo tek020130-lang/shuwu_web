@@ -11,17 +11,6 @@ const QUICK_ICONS = {
   数物限定: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12,2 22,8.5 22,15.5 12,22 2,15.5 2,8.5"/><line x1="12" y1="22" x2="12" y2="15.5"/><polyline points="22,8.5 12,15.5 2,8.5"/></svg>`,
 };
 
-// 快捷导航图标渐变色背景
-const QUICK_BG_COLORS = [
-  'rgba(251,207,232,0.5)',
-  'rgba(253,230,138,0.5)',
-  'rgba(167,243,208,0.5)',
-  'rgba(221,214,254,0.5)',
-  'rgba(186,230,253,0.5)',
-  'rgba(199,210,254,0.5)',
-  'rgba(251,207,232,0.5)',
-  'rgba(229,231,235,0.4)',
-];
 
 let activeCategory = 'all';
 
@@ -76,7 +65,7 @@ function renderQuickNav() {
     <div class="life-quick-nav">
       ${items.map((item, i) => `
         <div class="life-quick-item">
-          <div class="life-quick-icon glass-icon" style="background:${QUICK_BG_COLORS[i]}">
+          <div class="life-quick-icon glass-icon">
             ${item.icon}
           </div>
           <span class="life-quick-label">${item.name}</span>

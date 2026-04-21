@@ -210,6 +210,10 @@ export function renderSquare(container) {
     window.dispatchEvent(new CustomEvent('openCompose'));
   });
 
+  container.querySelector('#sq-profile-btn').addEventListener('click', () => {
+    window.dispatchEvent(new CustomEvent('openProfile'));
+  });
+
   const backdrop = container.querySelector('#sq-posts-center-backdrop');
   backdrop.addEventListener('click', () => closePostsCenter(container));
 }
