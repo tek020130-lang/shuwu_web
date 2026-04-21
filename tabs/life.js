@@ -1,6 +1,14 @@
 import { merchants as mockMerchants, userState } from '../data/mock.js';
 import { api } from '../api/client.js';
 
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:calc(var(--nav-h) + 24px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.75);color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;z-index:9999;pointer-events:none;white-space:nowrap;backdrop-filter:blur(8px)';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
 // 精美简笔画图标 SVG
 const QUICK_ICONS = {
   all: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M5 19l.5 1.5L7 21l-1.5.5L5 23l-.5-1.5L3 21l1.5-.5L5 19z"/><path d="M19 5l.5 1.5L21 7l-1.5.5L19 9l-.5-1.5L17 7l1.5-.5L19 5z"/></svg>`,
@@ -163,7 +171,15 @@ export async function renderLife(container) {
     const quickItem = e.target.closest('.life-quick-item');
     if (quickItem) {
       const label = quickItem.querySelector('.life-quick-label').textContent.trim();
-      const catMap = { '娱乐中心': '娱乐场所', '文创工坊': '潮玩周边', '餐饮消费': '餐饮消费', '数物限定': '数物限定', '旗舰店': '旗舰店', '精选推荐': 'all', '附近商户': 'all' };
+      if (label === '附近商户') {
+        window.dispatchEvent(new CustomEvent('openMap'));
+        return;
+      }
+      if (label === '更多服务') {
+        showToast('更多服务即将上线，敬请期待');
+        return;
+      }
+      const catMap = { '娱乐中心': '娱乐场所', '文创工坊': '潮玩周边', '餐饮消费': '餐饮消费', '数物限定': '数物限定', '旗舰店': '旗舰店', '精选推荐': 'all' };
       const cat = catMap[label] || 'all';
       activeCategory = cat;
       container.querySelectorAll('.cat-item').forEach(el => el.classList.toggle('active', el.dataset.cat === activeCategory));

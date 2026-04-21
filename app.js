@@ -28,8 +28,10 @@ function switchTab(tabId) {
   document.querySelectorAll('.nav-item[data-tab]').forEach(n => n.classList.remove('active'));
   document.getElementById(`page-${tabId}`).classList.add('active');
   const activeBtn = document.querySelector(`.nav-item[data-tab="${tabId}"]`);
-  if (activeBtn) { activeBtn.classList.add('active'); moveBlob(activeBtn); }
-  // 广场浮动按钮只在广场 tab 显示
+  if (activeBtn) {
+    activeBtn.classList.add('active');
+    requestAnimationFrame(() => moveBlob(activeBtn));
+  }
   const floatBtns = document.getElementById('sq-float-btns');
   if (floatBtns) floatBtns.style.display = tabId === 'square' ? 'block' : 'none';
 }

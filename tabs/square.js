@@ -105,10 +105,65 @@ function renderHotTopics() {
 
 function renderFeed(container) {
   const feed = container.querySelector('#sq-feed');
+
   if (activeTab === '快讯') {
-    feed.innerHTML = `<div class="sq-ticker-page" style="padding:16px 16px">${ticker.map(t => `<div class="sq-ticker-item">${t}</div>`).join('')}</div>`;
+    feed.innerHTML = `
+      <div style="padding:16px 16px">
+        <div style="font-size:12px;color:var(--text-sub);font-weight:500;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px">实时快讯</div>
+        ${ticker.map((t, i) => `
+          <div class="sq-ticker-item" style="display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid rgba(0,0,0,0.05)">
+            <div style="width:6px;height:6px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:6px"></div>
+            <div>
+              <div style="font-size:14px;line-height:1.6;color:var(--text);font-weight:300">${t}</div>
+              <div style="font-size:11px;color:var(--text-sub);margin-top:4px">${i === 0 ? '刚刚' : i < 3 ? `${i * 12}分钟前` : `${i}小时前`}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>`;
     return;
   }
+
+  if (activeTab === '关注') {
+    const followedPosts = posts.filter(p => p.nftTier === 'genesis');
+    if (followedPosts.length === 0) {
+      feed.innerHTML = `<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:80px 20px;gap:12px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="width:48px;height:48px;color:#D1D1D6"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+        <div style="font-size:16px;font-weight:300;color:#C7C7CC">还没有关注的人</div>
+        <div style="font-size:13px;color:#D1D1D6">去热门发现感兴趣的创作者</div>
+      </div>`;
+      return;
+    }
+    feed.innerHTML = `<div style="padding:12px 16px;display:flex;flex-direction:column;gap:12px">${followedPosts.map(p => renderPost(p)).join('')}</div>`;
+    return;
+  }
+
+  if (activeTab === '社区') {
+    const topicGroups = {};
+    posts.forEach(p => {
+      const t = p.topic || '其他';
+      if (!topicGroups[t]) topicGroups[t] = [];
+      topicGroups[t].push(p);
+    });
+    let html = '';
+    Object.entries(topicGroups).slice(0, 4).forEach(([topic, tPosts]) => {
+      html += `
+        <div style="padding:0 16px 4px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 0 10px">
+            <span style="font-size:15px;font-weight:600">#${topic}</span>
+            <span style="font-size:12px;color:var(--text-sub)">${tPosts.length} 条讨论</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            ${tPosts.slice(0, 2).map(p => renderPost(p)).join('')}
+          </div>
+        </div>
+        <div style="height:8px;background:rgba(0,0,0,0.03);margin:8px 0"></div>
+      `;
+    });
+    feed.innerHTML = html;
+    return;
+  }
+
+  // 热门 tab（默认）
   let html = renderHotTopics();
   posts.forEach((p, i) => {
     if (i > 0 && i % 4 === 0) {
@@ -211,7 +266,8 @@ export function renderSquare(container) {
   });
 
   container.querySelector('#sq-profile-btn').addEventListener('click', () => {
-    window.dispatchEvent(new CustomEvent('openProfile'));
+    const myPosts = posts.filter(p => p.userId === 'me' || p.userName === userState.name || p.userName === '我');
+    openPostsCenter(container, '我的帖子', myPosts);
   });
 
   const backdrop = container.querySelector('#sq-posts-center-backdrop');

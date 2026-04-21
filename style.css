@@ -150,7 +150,7 @@ img { display: block; width: 100%; object-fit: cover; }
   opacity: 0; pointer-events: none;
   transform: translateY(10px) translateZ(0);
   will-change: opacity, transform;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.18s ease, transform 0.18s ease;
   padding-bottom: calc(var(--nav-h) + 20px);
 }
 .tab-page.active { opacity: 1; pointer-events: auto; transform: translateY(0) translateZ(0); }
@@ -194,7 +194,7 @@ img { display: block; width: 100%; object-fit: cover; }
   border-radius: 999px;
   background: var(--sworl);
   box-shadow: 0 2px 8px rgba(163,230,53,0.3);
-  transition: left 0.42s cubic-bezier(0.34, 1.15, 0.64, 1), width 0.42s cubic-bezier(0.34, 1.15, 0.64, 1);
+  transition: left 0.28s cubic-bezier(0.34, 1.15, 0.64, 1), width 0.28s cubic-bezier(0.34, 1.15, 0.64, 1);
   pointer-events: none;
   z-index: 0;
 }
@@ -2038,66 +2038,44 @@ img { display: block; width: 100%; object-fit: cover; }
 .life-search-bar svg { width: 15px; height: 15px; flex-shrink: 0; }
 
 /* ══════════════════════════════════════
-   商城螺旋布局
+   商城双列布局（替换螺旋布局）
 ══════════════════════════════════════ */
-.mall-spiral-container {
-  perspective: 1400px;
-  padding: 8px 16px 24px;
-  display: flex; flex-direction: column; gap: 24px;
+.mall-product-grid-2col {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px; padding: 0 16px 24px;
 }
-.mall-spiral-item {
-  opacity: 0;
+.mall-grid-item {
+  opacity: 0; transform: translateY(18px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
   will-change: opacity, transform;
-  transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.23, 1, 0.32, 1);
 }
-.mall-spiral-item.left  { transform: translateX(-48px) rotateY(18deg) scale(0.92); }
-.mall-spiral-item.right { transform: translateX(48px) rotateY(-18deg) scale(0.92); }
-.mall-spiral-item.visible {
-  opacity: 1;
-  transform: translateX(0) rotateY(0deg) scale(1);
-}
-.mall-spiral-card {
-  border-radius: var(--radius-xl); overflow: hidden;
-  cursor: pointer;
+.mall-grid-item.visible { opacity: 1; transform: translateY(0); }
+.mall-grid-card {
+  border-radius: 20px; overflow: hidden; cursor: pointer;
   transition: transform 0.2s var(--ease);
 }
-.mall-spiral-card:active { transform: scale(0.97); }
-.spiral-card-img {
-  width: 100%; aspect-ratio: 4/3; overflow: hidden; position: relative;
+.mall-grid-card:active { transform: scale(0.96); }
+.mall-grid-img {
+  width: 100%; aspect-ratio: 1/1; overflow: hidden; position: relative;
 }
-.spiral-card-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s var(--ease); }
-.mall-spiral-card:active .spiral-card-img img { transform: scale(1.04); }
-.spiral-badge-limited {
-  position: absolute; top: 12px; left: 12px;
-  padding: 4px 10px; border-radius: var(--radius-pill);
+.mall-grid-img img { width: 100%; height: 100%; object-fit: cover; }
+.mall-grid-badge {
+  position: absolute; top: 8px; left: 8px;
+  padding: 3px 8px; border-radius: var(--radius-pill);
   background: var(--gold); color: #1A1A1A;
-  font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.5px;
 }
-.spiral-badge-type {
-  position: absolute; top: 12px; right: 12px;
+.mall-grid-body { padding: 10px 12px 14px; }
+.mall-grid-type { margin-bottom: 5px; }
+.mall-grid-name {
+  font-size: 13px; font-weight: 600; line-height: 1.3;
+  margin-bottom: 8px; letter-spacing: -0.2px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-.spiral-card-body { padding: 16px 18px 18px; }
-.spiral-card-meta {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 6px;
+.mall-grid-price {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 14px; font-weight: 700; letter-spacing: -0.3px;
 }
-.spiral-card-series { font-size: 11px; color: var(--text-sub); font-weight: 400; letter-spacing: 0.3px; }
-.spiral-card-index { font-size: 11px; color: var(--text-sub); font-family: monospace; }
-.spiral-card-name { font-size: 18px; font-weight: 700; letter-spacing: -0.4px; margin-bottom: 14px; }
-.spiral-card-footer {
-  display: flex; align-items: center; justify-content: space-between;
-}
-.spiral-card-price {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 17px; font-weight: 700; letter-spacing: -0.3px;
-}
-.spiral-like-btn {
-  width: 38px; height: 38px; border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  border: none; cursor: pointer;
-  transition: transform 0.15s var(--ease);
-}
-.spiral-like-btn:active { transform: scale(0.88); }
 
 /* 日期 pill 筛选 */
 .mall-date-pills {

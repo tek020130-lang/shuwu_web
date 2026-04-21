@@ -387,6 +387,48 @@ async function renderSpaceMain(container) {
   container.querySelector('#sp-avatar-btn').addEventListener('click', () => {
     window.dispatchEvent(new CustomEvent('openProfile'));
   });
+
+  // 划转弹窗
+  window.addEventListener('openTransfer', () => {
+    const sheet = document.createElement('div');
+    sheet.id = 'transfer-overlay';
+    sheet.style.cssText = 'position:fixed;inset:0;z-index:350;display:flex;flex-direction:column;justify-content:flex-end';
+    sheet.innerHTML = `
+      <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px)" id="transfer-backdrop"></div>
+      <div style="position:relative;z-index:1;background:#fff;border-radius:28px 28px 0 0;padding:16px 24px 48px;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.23,1,0.32,1)" id="transfer-sheet">
+        <div style="width:36px;height:4px;border-radius:2px;background:#E5E5EA;margin:0 auto 24px"></div>
+        <div style="font-size:20px;font-weight:600;margin-bottom:6px">划转</div>
+        <div style="font-size:13px;color:var(--text-sub);margin-bottom:24px">在 SWORL 与数字人民币之间划转</div>
+        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px">
+          <div style="background:#F5F5F7;border-radius:16px;padding:16px">
+            <div style="font-size:11px;color:var(--text-sub);margin-bottom:8px">从</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:16px;font-weight:500">SWORL</span>
+              <span style="font-size:13px;color:var(--text-sub)">可用 ${spaceState.sworlBalance.toLocaleString()}</span>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:20px;color:var(--text-sub)">⇅</div>
+          <div style="background:#F5F5F7;border-radius:16px;padding:16px">
+            <div style="font-size:11px;color:var(--text-sub);margin-bottom:8px">到</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:16px;font-weight:500">数字人民币</span>
+              <span style="font-size:13px;color:var(--text-sub)">可用 ¥${(spaceState.ecnyBalance||0).toFixed(2)}</span>
+            </div>
+          </div>
+        </div>
+        <input type="number" placeholder="输入划转数量" style="width:100%;height:52px;border-radius:14px;border:1px solid rgba(0,0,0,0.1);padding:0 16px;font-size:16px;font-family:inherit;outline:none;margin-bottom:16px" />
+        <button style="width:100%;height:52px;border-radius:999px;background:#1A1A1A;color:#fff;font-size:16px;font-weight:500;border:none;cursor:pointer">确认划转</button>
+      </div>
+    `;
+    document.body.appendChild(sheet);
+    requestAnimationFrame(() => { sheet.querySelector('#transfer-sheet').style.transform = 'translateY(0)'; });
+    const close = () => {
+      sheet.querySelector('#transfer-sheet').style.transform = 'translateY(100%)';
+      setTimeout(() => sheet.remove(), 400);
+    };
+    sheet.querySelector('#transfer-backdrop').addEventListener('click', close);
+    sheet.querySelector('button').addEventListener('click', close);
+  });
 }
 
 export function renderSpace(container) {

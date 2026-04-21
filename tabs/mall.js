@@ -23,29 +23,19 @@ function typeLabel(type) {
 }
 
 function renderProductCard(p, index) {
-  const side = index % 2 === 0 ? 'left' : 'right';
   return `
-    <div class="mall-spiral-item ${side}" data-index="${index}">
-      <div class="mall-spiral-card glass-card" data-id="${p.id}">
-        <div class="spiral-card-img">
+    <div class="mall-grid-item" data-index="${index}">
+      <div class="mall-grid-card glass-card" data-id="${p.id}">
+        <div class="mall-grid-img">
           <img src="${p.image}" alt="${p.name}" loading="lazy" />
-          ${p.limited ? '<div class="spiral-badge-limited">限定</div>' : ''}
-          <div class="spiral-badge-type">${typeLabel(p.type)}</div>
+          ${p.limited ? '<div class="mall-grid-badge">限定</div>' : ''}
         </div>
-        <div class="spiral-card-body">
-          <div class="spiral-card-meta">
-            <span class="spiral-card-series">${p.series || p.creator}</span>
-            <span class="spiral-card-index">#${String(index + 1).padStart(3, '0')}</span>
-          </div>
-          <div class="spiral-card-name">${p.name}</div>
-          <div class="spiral-card-footer">
-            <div class="spiral-card-price">
-              ${sworlIcon(p.id)}
-              <span>${p.price.toLocaleString()}</span>
-            </div>
-            <button class="spiral-like-btn prod-like-btn" data-id="${p.id}">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-            </button>
+        <div class="mall-grid-body">
+          <div class="mall-grid-type">${typeLabel(p.type)}</div>
+          <div class="mall-grid-name">${p.name}</div>
+          <div class="mall-grid-price">
+            ${sworlIcon(p.id)}
+            <span>${p.price.toLocaleString()}</span>
           </div>
         </div>
       </div>
@@ -64,21 +54,21 @@ function getFiltered() {
 function initSpiralObserver(container) {
   if (spiralObserver) spiralObserver.disconnect();
   spiralObserver = new IntersectionObserver((entries) => {
-    entries.forEach((e, i) => {
+    entries.forEach(e => {
       if (e.isIntersecting) {
-        const delay = parseInt(e.target.dataset.index || 0) * 60;
-        setTimeout(() => e.target.classList.add('visible'), Math.min(delay, 300));
+        const delay = (parseInt(e.target.dataset.index || 0) % 4) * 80;
+        setTimeout(() => e.target.classList.add('visible'), delay);
         spiralObserver.unobserve(e.target);
       }
     });
-  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-  container.querySelectorAll('.mall-spiral-item').forEach(el => spiralObserver.observe(el));
+  }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+  container.querySelectorAll('.mall-grid-item').forEach(el => spiralObserver.observe(el));
 }
 
 function renderFeed(container) {
   const products = getFiltered();
   const grid = container.querySelector('#mall-product-grid');
-  grid.innerHTML = `<div class="mall-spiral-container">${products.map((p, i) => renderProductCard(p, i)).join('')}</div>`;
+  grid.innerHTML = `<div class="mall-product-grid-2col">${products.map((p, i) => renderProductCard(p, i)).join('')}</div>`;
   initSpiralObserver(grid);
 }
 
@@ -248,7 +238,7 @@ export function renderMall(container) {
   });
 
   container.querySelector('#mall-product-grid').addEventListener('click', e => {
-    const card = e.target.closest('.mall-spiral-card');
+    const card = e.target.closest('.mall-grid-card');
     if (card && !e.target.closest('.prod-like-btn')) openDetail(+card.dataset.id);
   });
 
