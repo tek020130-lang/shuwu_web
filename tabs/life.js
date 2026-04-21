@@ -206,6 +206,10 @@ export function renderLife(container) {
     window.dispatchEvent(new CustomEvent('openSearch'));
   });
 
+  window.addEventListener('openMerchantDetail', e => {
+    if (e.detail) openMerchantDetail(e.detail);
+  });
+
   container.querySelector('#map-btn').addEventListener('click', () => {
     window.dispatchEvent(new CustomEvent('openMap'));
   });

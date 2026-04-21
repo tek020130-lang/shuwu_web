@@ -378,7 +378,8 @@ export function renderSquare(container) {
     `;
     document.body.appendChild(btnGroup);
   }
-  btnGroup.style.display = 'block';
+  const isSquareActive = document.getElementById('page-square')?.classList.contains('active');
+  btnGroup.style.display = isSquareActive ? 'block' : 'none';
 
   renderFeed(container);
   requestAnimationFrame(() => moveTabLine(container));

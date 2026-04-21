@@ -86,6 +86,7 @@ function renderRegister(container) {
       try {
         const { token } = await api.verify(phoneInput.value, container.querySelector('#reg-code').value);
         setToken(token);
+        localStorage.setItem('sw_registered', '1');
         renderSpaceMain(container);
       } catch (e) {
         errorEl.textContent = e.message; errorEl.classList.remove('hidden');
@@ -95,6 +96,7 @@ function renderRegister(container) {
   });
 
   container.querySelector('#reg-skip').addEventListener('click', () => {
+    localStorage.setItem('sw_registered', '1');
     spaceState.isRegistered = true;
     renderSpaceMain(container);
   });
@@ -456,7 +458,8 @@ async function renderSpaceMain(container) {
 }
 
 export function renderSpace(container) {
-  if (isLoggedIn()) {
+  const registered = localStorage.getItem('sw_registered');
+  if (isLoggedIn() || registered) {
     renderSpaceMain(container);
   } else {
     renderRegister(container);
