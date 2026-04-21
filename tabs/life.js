@@ -1,5 +1,4 @@
 import { merchants as mockMerchants, userState } from '../data/mock.js';
-import { api } from '../api/client.js';
 
 function showToast(msg) {
   const t = document.createElement('div');
@@ -196,12 +195,8 @@ function renderFeed(list) {
   `;
 }
 
-export async function renderLife(container) {
-  let merchantList = mockMerchants;
-  try {
-    const result = await api.getMerchants();
-    if (Array.isArray(result) && result.length > 0) merchantList = result;
-  } catch { /* use mock */ }
+export function renderLife(container) {
+  const merchantList = mockMerchants;
 
   container.innerHTML = renderHeader() + renderQuickNav() + renderFeed(merchantList);
 
@@ -213,7 +208,7 @@ export async function renderLife(container) {
     window.dispatchEvent(new CustomEvent('openMap'));
   });
 
-  container.addEventListener('click', async e => {
+  container.addEventListener('click', e => {
     const catItem = e.target.closest('.cat-item');
     if (catItem) {
       activeCategory = catItem.dataset.cat;
@@ -222,7 +217,6 @@ export async function renderLife(container) {
       });
       const params = activeCategory !== 'all' ? { category: activeCategory } : {};
       let list = mockMerchants.filter(m => activeCategory === 'all' || m.category === activeCategory);
-      try { const r = await api.getMerchants(params); if (Array.isArray(r) && r.length > 0) list = r; } catch { /* use mock */ }
       const feed = container.querySelector('#merchant-feed');
       const tmp = document.createElement('div');
       tmp.innerHTML = renderFeed(list);
@@ -255,7 +249,6 @@ export async function renderLife(container) {
       activeCategory = cat;
       container.querySelectorAll('.cat-item').forEach(el => el.classList.toggle('active', el.dataset.cat === activeCategory));
       let list = mockMerchants.filter(m => cat === 'all' || m.category === cat);
-      try { const r = await api.getMerchants(cat !== 'all' ? { category: cat } : {}); if (Array.isArray(r) && r.length > 0) list = r; } catch { /* use mock */ }
       const feed = container.querySelector('#merchant-feed');
       const tmp = document.createElement('div');
       tmp.innerHTML = renderFeed(list);
