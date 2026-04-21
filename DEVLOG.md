@@ -58,8 +58,43 @@
 
 ## 注意事项
 - 验证码目前是开发模式（ALIYUN_ACCESS_KEY=dev），任何6位数字可通过
-- 旧 Netlify 链接 https://incredible-gnome-f35455.netlify.app 已废弃
+- 当前 Netlify 地址：https://incredible-gnome-f35455.netlify.app
+- 部署命令：`npm run build && netlify deploy --prod --dir=dist`（需配置 netlify.toml）
+- 生活/商城/空间板块 API 调用均有 mock 兜底，后端不可用时前端正常显示
+
+## 2026-04-21 详细更新
+
+### 新增功能
+- **生活板块 — 商户详情页**：商户卡片点击不再直接跳支付，改为弹出 bottom sheet 详情页（大图、评分、标签、营业时间、距离、SWORL 支持提示），详情页内点"立即消费"才触发支付
+- **广场板块 — 评论 sheet**：点评论按钮弹出评论列表 + 输入框，可发送新评论
+- **广场板块 — 转发 toast**：点转发按钮显示"转发成功，+0.5 SWORL"提示
+- **广场板块 — ··· 菜单**：点三点菜单弹出 action sheet（收藏 / 复制链接 / 举报）
+- **商城板块 — 已购状态**：购买成功后商品卡片显示绿色"已购"badge
+- **商城板块 — 购物车**：购物车按钮打开已购藏品列表 sheet
+- **商城板块 — 商品搜索**：商城搜索框搜索商品（名称/系列/创作者），生活板块搜索框搜索商户，两者独立
+- **空间板块 — 复制 toast**：复制钱包地址后显示"地址已复制"提示
+- **空间板块 — 菜单项**：安全中心打开 profile-overlay，设置/帮助显示"功能即将上线"toast
+- **空间板块 — 余额同步**：支付成功后 SWORL 余额实时更新
+- **全局 — paymentSuccess 事件**：支付成功时派发自定义事件，各模块可监听响应
+
+### 数据完善
+- `data/mock.js` merchants 补充 `distance`、`openTime`、`tags`、`priceRange` 字段
+- `data/mock.js` userState 补充 `name` 字段
+
+### Bug 修复
+- **全 app 白屏**：`life.js` 中 `let activeCategory` 声明被插入代码覆盖，导致 ReferenceError 使整个 JS bundle 崩溃，已修复变量声明位置
+- **生活板块空白**：`api.getMerchants()` 在无后端时 fetch hang，导致 `renderLife` 卡住不渲染，改为完全使用 mock 数据（移除 API 调用）
+- **广场发帖中心 overlay 透视**：`position:fixed` 被 `overflow-y:auto` 父容器裁剪，将 overlay 挂到 `document.body`
+- **广场加号按钮状态**：`renderSquare` 重新渲染时无条件设 `display:block`，切换到其他 tab 后发帖会导致按钮重新出现，改为检查当前 tab 状态
+- **发帖弹窗期间加号按钮**：打开发帖弹窗时隐藏加号按钮，关闭/发布后恢复
+- **空间菜单重复数藏空间**：菜单列表里去掉重复的"数藏空间"入口，保留上方卡片入口
+- **Netlify 部署空白**：项目缺少 `netlify.toml`，Netlify 不知道 publish 目录是 `dist`，添加配置文件后恢复正常
+
+### 架构调整
+- 新增 `netlify.toml`，明确 `build.command` 和 `publish = "dist"`
+- 空间注册状态改用 `localStorage('sw_registered')` 持久化，注册/跳过后下次进入直接显示主页，未注册用户正常触发注册流程
 
 ## 更新记录
 - **2026-03-25** — 完成后端 API + 数据库初始化 + 前端部署，整个全栈架构跑通
 - **2026-03-31** — 全面重设计 UI 为 xinUI 风格（liquid glass），修复多个运行时 bug（数藏弹窗遮挡、商城日期筛选、广场+号固定定位、空间板块点击空白）
+- **2026-04-21** — 全功能 UI 完善 + 一系列 bug 修复，详见下方
