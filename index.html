@@ -4,6 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>数物 · SWORL World</title>
+  <script>
+  window.addEventListener('error',function(e){document.title='ERR:'+e.message;var d=document.createElement('pre');d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:red;color:#fff;padding:20px;font-size:12px;white-space:pre-wrap';d.textContent='ERROR: '+e.message+'\n'+e.filename+':'+e.lineno;document.body.appendChild(d);},true);
+  window.addEventListener('unhandledrejection',function(e){document.title='REJ:'+e.reason;var d=document.createElement('pre');d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:red;color:#fff;padding:20px;font-size:12px;white-space:pre-wrap';d.textContent='REJECTION: '+e.reason;document.body.appendChild(d);});
+  </script>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>

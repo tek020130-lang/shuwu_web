@@ -1,5 +1,7 @@
 import { merchants as mockMerchants, userState } from '../data/mock.js';
 
+let activeCategory = 'all';
+
 function showToast(msg) {
   const t = document.createElement('div');
   t.textContent = msg;
