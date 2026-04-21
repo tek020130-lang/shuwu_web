@@ -198,7 +198,10 @@ function renderFeed(list) {
 
 export async function renderLife(container) {
   let merchantList = mockMerchants;
-  try { merchantList = await api.getMerchants(); } catch { /* use mock */ }
+  try {
+    const result = await api.getMerchants();
+    if (Array.isArray(result) && result.length > 0) merchantList = result;
+  } catch { /* use mock */ }
 
   container.innerHTML = renderHeader() + renderQuickNav() + renderFeed(merchantList);
 
@@ -219,7 +222,7 @@ export async function renderLife(container) {
       });
       const params = activeCategory !== 'all' ? { category: activeCategory } : {};
       let list = mockMerchants.filter(m => activeCategory === 'all' || m.category === activeCategory);
-      try { list = await api.getMerchants(params); } catch { /* use mock */ }
+      try { const r = await api.getMerchants(params); if (Array.isArray(r) && r.length > 0) list = r; } catch { /* use mock */ }
       const feed = container.querySelector('#merchant-feed');
       const tmp = document.createElement('div');
       tmp.innerHTML = renderFeed(list);
@@ -252,7 +255,7 @@ export async function renderLife(container) {
       activeCategory = cat;
       container.querySelectorAll('.cat-item').forEach(el => el.classList.toggle('active', el.dataset.cat === activeCategory));
       let list = mockMerchants.filter(m => cat === 'all' || m.category === cat);
-      try { list = await api.getMerchants(cat !== 'all' ? { category: cat } : {}); } catch { /* use mock */ }
+      try { const r = await api.getMerchants(cat !== 'all' ? { category: cat } : {}); if (Array.isArray(r) && r.length > 0) list = r; } catch { /* use mock */ }
       const feed = container.querySelector('#merchant-feed');
       const tmp = document.createElement('div');
       tmp.innerHTML = renderFeed(list);

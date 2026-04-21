@@ -75,12 +75,16 @@ function initCompose() {
     topicsEl.querySelectorAll('.compose-topic-tag').forEach(b => b.classList.toggle('selected', b.dataset.topic === selectedTopic));
   });
 
+  const hideFloatBtn = () => { const b = document.getElementById('sq-float-btns'); if (b) b.style.display = 'none'; };
+  const showFloatBtn = () => { const b = document.getElementById('sq-float-btns'); if (b) b.style.display = 'block'; };
+
   window.addEventListener('openCompose', () => {
     overlay.classList.remove('hidden');
+    hideFloatBtn();
     setTimeout(() => textarea.focus(), 300);
   });
 
-  backdrop.addEventListener('click', () => overlay.classList.add('hidden'));
+  backdrop.addEventListener('click', () => { overlay.classList.add('hidden'); showFloatBtn(); });
 
   publishBtn.addEventListener('click', () => {
     const content = textarea.value.trim();
@@ -92,6 +96,7 @@ function initCompose() {
       addPost(content, selectedTopic);
       overlay.classList.add('hidden');
       textarea.value = '';
+      showFloatBtn();
       renderSquare(document.getElementById('page-square'));
       window.dispatchEvent(new CustomEvent('paymentSuccess', { detail: { amount: 0.5 } }));
     }, 400);
