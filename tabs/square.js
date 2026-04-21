@@ -197,16 +197,25 @@ export function renderSquare(container) {
       </div>
     </div>
     <div id="sq-feed" class="sq-feed"></div>
-    <!-- 发帖中心 overlay -->
-    <div id="sq-posts-center" style="position:fixed;inset:0;z-index:300;display:none;flex-direction:column">
+  `;
+
+  // 发帖中心 overlay — 挂到 body 避免被 overflow:auto 裁剪
+  let postsCenter = document.getElementById('sq-posts-center');
+  if (!postsCenter) {
+    postsCenter = document.createElement('div');
+    postsCenter.id = 'sq-posts-center';
+    postsCenter.style.cssText = 'position:fixed;inset:0;z-index:300;display:none;flex-direction:column';
+    postsCenter.innerHTML = `
       <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35);backdrop-filter:blur(6px)" id="sq-posts-center-backdrop"></div>
       <div id="sq-posts-center-sheet" style="position:relative;z-index:1;background:#fff;border-radius:28px 28px 0 0;margin-top:auto;max-height:85vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.23,1,0.32,1)">
         <div style="width:36px;height:4px;border-radius:2px;background:#E5E5EA;margin:12px auto 0;flex-shrink:0"></div>
         <div id="sq-posts-center-title" style="font-size:18px;font-weight:700;text-align:center;padding:16px 24px 4px;flex-shrink:0"></div>
         <div id="sq-posts-center-list" style="overflow-y:auto;padding:0 16px 40px;display:flex;flex-direction:column;gap:12px"></div>
       </div>
-    </div>
-  `;
+    `;
+    document.body.appendChild(postsCenter);
+    postsCenter.querySelector('#sq-posts-center-backdrop').addEventListener('click', () => closePostsCenter());
+  }
 
   // 把按钮组挂到 body，避免被 overflow:hidden 裁剪
   let btnGroup = document.getElementById('sq-float-btns');
@@ -249,7 +258,6 @@ export function renderSquare(container) {
       setTimeout(() => likeBtn.style.transform = '', 200);
       return;
     }
-    // 头像点击 → 进入该用户发帖中心
     const avatar = e.target.closest('.sq-avatar-img');
     if (avatar) {
       const postEl = avatar.closest('.sq-post-new');
@@ -257,7 +265,7 @@ export function renderSquare(container) {
       const id = parseInt(postEl.dataset.id);
       const post = posts.find(p => p.id === id);
       if (!post) return;
-      openPostsCenter(container, post.userName, posts.filter(p => p.userId === post.userId));
+      openPostsCenter(post.userName, posts.filter(p => p.userId === post.userId));
     }
   });
 
@@ -267,11 +275,8 @@ export function renderSquare(container) {
 
   container.querySelector('#sq-profile-btn').addEventListener('click', () => {
     const myPosts = posts.filter(p => p.userId === 'me' || p.userName === userState.name || p.userName === '我');
-    openPostsCenter(container, '我的帖子', myPosts);
+    openPostsCenter('我的帖子', myPosts);
   });
-
-  const backdrop = container.querySelector('#sq-posts-center-backdrop');
-  backdrop.addEventListener('click', () => closePostsCenter(container));
 }
 
 function moveTabLine(container) {
@@ -285,23 +290,22 @@ function moveTabLine(container) {
   line.style.width = '24px';
 }
 
-function openPostsCenter(container, title, userPosts) {
-  const overlay = container.querySelector('#sq-posts-center');
-  const sheet = container.querySelector('#sq-posts-center-sheet');
-  container.querySelector('#sq-posts-center-title').textContent = title;
-  const list = container.querySelector('#sq-posts-center-list');
-  if (userPosts.length === 0) {
-    list.innerHTML = '<div style="text-align:center;color:var(--text-sub);padding:40px 0;font-size:14px">暂无帖子</div>';
-  } else {
-    list.innerHTML = userPosts.map(p => renderPost(p)).join('');
-  }
+function openPostsCenter(title, userPosts) {
+  const overlay = document.getElementById('sq-posts-center');
+  const sheet = document.getElementById('sq-posts-center-sheet');
+  document.getElementById('sq-posts-center-title').textContent = title;
+  const list = document.getElementById('sq-posts-center-list');
+  list.innerHTML = userPosts.length === 0
+    ? '<div style="text-align:center;color:var(--text-sub);padding:40px 0;font-size:14px">暂无帖子</div>'
+    : userPosts.map(p => renderPost(p)).join('');
   overlay.style.display = 'flex';
   requestAnimationFrame(() => { sheet.style.transform = 'translateY(0)'; });
 }
 
-function closePostsCenter(container) {
-  const overlay = container.querySelector('#sq-posts-center');
-  const sheet = container.querySelector('#sq-posts-center-sheet');
+function closePostsCenter() {
+  const overlay = document.getElementById('sq-posts-center');
+  const sheet = document.getElementById('sq-posts-center-sheet');
+  if (!overlay || !sheet) return;
   sheet.style.transform = 'translateY(100%)';
   setTimeout(() => { overlay.style.display = 'none'; }, 400);
 }
