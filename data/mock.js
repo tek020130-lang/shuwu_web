@@ -1,12 +1,12 @@
 export const merchants = [
-  { id: 1, name: '数物旗舰店', desc: '官方直营 · 限定发售', category: '旗舰店', image: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=400&q=80', goldTier: true, sworlSupport: true, rating: 4.9 },
-  { id: 2, name: 'NEON潮玩', desc: '潮流手办 · 盲盒', category: '潮玩周边', image: 'https://images.unsplash.com/photo-1608501078713-8e445a709b39?w=400&q=80', goldTier: true, sworlSupport: true, rating: 4.8 },
-  { id: 3, name: '星际KTV', desc: '沉浸式娱乐体验', category: '娱乐场所', image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&q=80', goldTier: false, sworlSupport: true, rating: 4.7 },
-  { id: 4, name: '云端餐厅', desc: '米其林推荐 · 区块链溯源', category: '餐饮消费', image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80', goldTier: false, sworlSupport: true, rating: 4.6 },
-  { id: 5, name: '数物限定馆', desc: '限量 · 仅限持币用户', category: '数物限定', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80', goldTier: true, sworlSupport: true, rating: 5.0 },
-  { id: 6, name: 'VOID电竞馆', desc: '专业赛事 · 代币积分', category: '娱乐场所', image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&q=80', goldTier: false, sworlSupport: true, rating: 4.5 },
-  { id: 7, name: '幻境密室', desc: '沉浸剧本 · NFT道具', category: '娱乐场所', image: 'https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=400&q=80', goldTier: false, sworlSupport: true, rating: 4.7 },
-  { id: 8, name: '潮流集合店', desc: '联名款 · 限时折扣', category: '潮玩周边', image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&q=80', goldTier: false, sworlSupport: false, rating: 4.4 },
+  { id: 1, name: '数物旗舰店', desc: '官方直营 · 限定发售', category: '旗舰店', image: 'https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=400&q=80', goldTier: true, sworlSupport: true, rating: 4.9, distance: '0.3km', openTime: '10:00-22:00', tags: ['SWORL支付', 'NFT会员', '官方认证'], priceRange: '¥¥¥' },
+  { id: 2, name: 'NEON潮玩', desc: '潮流手办 · 盲盒', category: '潮玩周边', image: 'https://images.unsplash.com/photo-1608501078713-8e445a709b39?w=400&q=80', goldTier: true, sworlSupport: true, rating: 4.8, distance: '0.8km', openTime: '11:00-21:00', tags: ['SWORL支付', '限定盲盒', '联名款'], priceRange: '¥¥' },
+  { id: 3, name: '星际KTV', desc: '沉浸式娱乐体验', category: '娱乐场所', image: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=400&q=80', goldTier: false, sworlSupport: true, rating: 4.7, distance: '1.2km', openTime: '14:00-02:00', tags: ['SWORL支付', '代币返现', '包厢预订'], priceRange: '¥¥' },
+  { id: 4, name: '云端餐厅', desc: '米其林推荐 · 区块链溯源', category: '餐饮消费', image: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400&q=80', goldTier: false, sworlSupport: true, rating: 4.6, distance: '1.5km', openTime: '11:30-22:00', tags: ['SWORL支付', '链上溯源', '米其林'], priceRange: '¥¥¥' },
+  { id: 5, name: '数物限定馆', desc: '限量 · 仅限持币用户', category: '数物限定', image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80', goldTier: true, sworlSupport: true, rating: 5.0, distance: '0.5km', openTime: '10:00-20:00', tags: ['持币专属', '限量发售', 'NFT权益'], priceRange: '¥¥¥¥' },
+  { id: 6, name: 'VOID电竞馆', desc: '专业赛事 · 代币积分', category: '娱乐场所', image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=400&q=80', goldTier: false, sworlSupport: true, rating: 4.5, distance: '2.1km', openTime: '10:00-24:00', tags: ['SWORL积分', '赛事奖励', '专业设备'], priceRange: '¥' },
+  { id: 7, name: '幻境密室', desc: '沉浸剧本 · NFT道具', category: '娱乐场所', image: 'https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?w=400&q=80', goldTier: false, sworlSupport: true, rating: 4.7, distance: '1.8km', openTime: '13:00-23:00', tags: ['NFT道具', 'SWORL支付', '剧本杀'], priceRange: '¥¥' },
+  { id: 8, name: '潮流集合店', desc: '联名款 · 限时折扣', category: '潮玩周边', image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400&q=80', goldTier: false, sworlSupport: false, rating: 4.4, distance: '0.9km', openTime: '10:00-21:30', tags: ['联名款', '限时折扣', '潮流单品'], priceRange: '¥¥' },
 ];
 
 export const categories = [
@@ -24,7 +24,7 @@ export const nftList = [
 
 export const priceOracle = { sworlToCny: 0.85, cnyToSworl: 1.18 };
 
-export const userState = { city: '上海', sworlBalance: 2480 };
+export const userState = { city: '上海', sworlBalance: 2480, name: '数物先行者' };
 
 // ── Square / 广场 ──
 export const topics = ['数物生态', 'SWORL行情', 'NFT', '娱乐场所', '限定活动'];

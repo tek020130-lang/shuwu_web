@@ -30,6 +30,154 @@ const HOT_TOPICS = [
 
 const AVATAR_COLORS = ['#8B5CF6','#3B82F6','#10B981','#F59E0B','#EF4444','#EC4899','#6366F1'];
 
+const MOCK_COMMENTS = [
+  { user: '数物先行者', text: '说得太对了，完全认同！', time: '1分钟前', color: '#1A1A1A' },
+  { user: 'CryptoNomad', text: '这个观点很有意思，值得深入探讨', time: '5分钟前', color: '#5856D6' },
+  { user: 'NFT_Collector', text: '支持！数物生态越来越完善了', time: '12分钟前', color: '#FF6B35' },
+  { user: '夜行者_Shanghai', text: '已转发给朋友，大家都觉得很有价值', time: '28分钟前', color: '#34C759' },
+];
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:calc(var(--nav-h) + 24px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.75);color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;z-index:9999;pointer-events:none;white-space:nowrap;backdrop-filter:blur(8px)';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
+function openCommentSheet(post) {
+  let overlay = document.getElementById('sq-comment-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'sq-comment-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:300;display:none;flex-direction:column;justify-content:flex-end';
+    overlay.innerHTML = `
+      <div id="sq-comment-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(6px)"></div>
+      <div id="sq-comment-sheet" style="position:relative;z-index:1;background:#fff;border-radius:28px 28px 0 0;max-height:80vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.23,1,0.32,1)">
+        <div style="width:36px;height:4px;border-radius:2px;background:#E5E5EA;margin:12px auto 0;flex-shrink:0"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px 10px;flex-shrink:0">
+          <div style="font-size:17px;font-weight:700" id="sq-comment-title">评论</div>
+          <button id="sq-comment-close" style="width:32px;height:32px;border-radius:50%;border:none;background:#F5F5F7;display:flex;align-items:center;justify-content:center;cursor:pointer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div id="sq-comment-list" style="overflow-y:auto;flex:1;padding:0 16px 8px"></div>
+        <div style="padding:12px 16px 40px;border-top:1px solid rgba(0,0,0,0.06);flex-shrink:0;display:flex;gap:10px">
+          <input id="sq-comment-input" placeholder="说点什么…" style="flex:1;height:44px;border-radius:22px;border:1px solid rgba(0,0,0,0.1);padding:0 16px;font-size:14px;font-family:inherit;outline:none;background:#F9F9FB" />
+          <button id="sq-comment-send" style="height:44px;padding:0 20px;border-radius:22px;background:#1A1A1A;color:#fff;font-size:14px;font-weight:500;border:none;cursor:pointer">发送</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.querySelector('#sq-comment-backdrop').addEventListener('click', closeCommentSheet);
+    overlay.querySelector('#sq-comment-close').addEventListener('click', closeCommentSheet);
+  }
+
+  overlay.querySelector('#sq-comment-title').textContent = `评论 (${post.comments})`;
+  const list = overlay.querySelector('#sq-comment-list');
+  list.innerHTML = MOCK_COMMENTS.slice(0, post.comments > 0 ? Math.min(post.comments, 4) : 0).map(c => `
+    <div style="display:flex;gap:10px;padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.04)">
+      <div style="width:36px;height:36px;border-radius:50%;background:${c.color};display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:600;flex-shrink:0">${c.user.charAt(0)}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;margin-bottom:3px">${c.user}</div>
+        <div style="font-size:14px;line-height:1.5;color:var(--text)">${c.text}</div>
+        <div style="font-size:11px;color:var(--text-sub);margin-top:4px">${c.time}</div>
+      </div>
+    </div>
+  `).join('') || `<div style="text-align:center;padding:40px 0;color:var(--text-sub);font-size:14px">暂无评论，来说第一句话</div>`;
+
+  const sendBtn = overlay.querySelector('#sq-comment-send');
+  const input = overlay.querySelector('#sq-comment-input');
+  const newSend = sendBtn.cloneNode(true);
+  sendBtn.parentNode.replaceChild(newSend, sendBtn);
+  newSend.addEventListener('click', () => {
+    const text = input.value.trim();
+    if (!text) return;
+    post.comments++;
+    const newComment = document.createElement('div');
+    newComment.style.cssText = 'display:flex;gap:10px;padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.04)';
+    newComment.innerHTML = `
+      <div style="width:36px;height:36px;border-radius:50%;background:#1A1A1A;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:600;flex-shrink:0">我</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;margin-bottom:3px">我</div>
+        <div style="font-size:14px;line-height:1.5">${text}</div>
+        <div style="font-size:11px;color:var(--text-sub);margin-top:4px">刚刚</div>
+      </div>
+    `;
+    list.insertBefore(newComment, list.firstChild);
+    input.value = '';
+    showToast('评论成功');
+  });
+
+  overlay.style.display = 'flex';
+  requestAnimationFrame(() => { overlay.querySelector('#sq-comment-sheet').style.transform = 'translateY(0)'; });
+}
+
+function closeCommentSheet() {
+  const overlay = document.getElementById('sq-comment-overlay');
+  const sheet = overlay?.querySelector('#sq-comment-sheet');
+  if (!overlay || !sheet) return;
+  sheet.style.transform = 'translateY(100%)';
+  setTimeout(() => { overlay.style.display = 'none'; }, 400);
+}
+
+function openMenuSheet(post) {
+  let overlay = document.getElementById('sq-menu-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'sq-menu-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:300;display:none;flex-direction:column;justify-content:flex-end';
+    overlay.innerHTML = `
+      <div id="sq-menu-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.3);backdrop-filter:blur(4px)"></div>
+      <div id="sq-menu-sheet" style="position:relative;z-index:1;background:#fff;border-radius:28px 28px 0 0;padding:16px 16px 48px;transform:translateY(100%);transition:transform 0.35s cubic-bezier(0.23,1,0.32,1)">
+        <div style="width:36px;height:4px;border-radius:2px;background:#E5E5EA;margin:0 auto 16px"></div>
+        <div id="sq-menu-actions"></div>
+        <button id="sq-menu-cancel" style="width:100%;height:52px;border-radius:16px;background:#F5F5F7;border:none;font-size:16px;color:var(--text-sub);cursor:pointer;margin-top:8px">取消</button>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.querySelector('#sq-menu-backdrop').addEventListener('click', closeMenuSheet);
+    overlay.querySelector('#sq-menu-cancel').addEventListener('click', closeMenuSheet);
+  }
+
+  const actions = [
+    { label: '收藏', icon: '<path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>' },
+    { label: '复制链接', icon: '<path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/>' },
+    { label: '举报', icon: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>', color: '#FF3B30' },
+  ];
+
+  overlay.querySelector('#sq-menu-actions').innerHTML = actions.map((a, i) => `
+    <button class="sq-menu-action-btn" data-action="${a.label}" style="width:100%;height:52px;border-radius:16px;background:#F9F9FB;border:none;display:flex;align-items:center;gap:14px;padding:0 20px;font-size:16px;cursor:pointer;color:${a.color || 'var(--text)'};margin-bottom:8px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="${a.color || 'currentColor'}" stroke-width="1.5" style="width:20px;height:20px">${a.icon}</svg>
+      ${a.label}
+    </button>
+  `).join('');
+
+  const actionsEl = overlay.querySelector('#sq-menu-actions');
+  const newActionsEl = actionsEl.cloneNode(true);
+  actionsEl.parentNode.replaceChild(newActionsEl, actionsEl);
+  newActionsEl.addEventListener('click', e => {
+    const btn = e.target.closest('.sq-menu-action-btn');
+    if (!btn) return;
+    const action = btn.dataset.action;
+    closeMenuSheet();
+    if (action === '收藏') showToast('已收藏');
+    else if (action === '复制链接') showToast('链接已复制');
+    else if (action === '举报') showToast('举报已提交，感谢反馈');
+  });
+
+  overlay.style.display = 'flex';
+  requestAnimationFrame(() => { overlay.querySelector('#sq-menu-sheet').style.transform = 'translateY(0)'; });
+}
+
+function closeMenuSheet() {
+  const overlay = document.getElementById('sq-menu-overlay');
+  const sheet = overlay?.querySelector('#sq-menu-sheet');
+  if (!overlay || !sheet) return;
+  sheet.style.transform = 'translateY(100%)';
+  setTimeout(() => { overlay.style.display = 'none'; }, 350);
+}
+
 function avatarColor(name) {
   let h = 0;
   for (let i = 0; i < name.length; i++) h = name.charCodeAt(i) + ((h << 5) - h);
@@ -52,7 +200,7 @@ function renderPost(p) {
             <span class="sq-post-time">${p.time}</span>
           </div>
         </div>
-        <button class="glass-icon" style="width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center">
+        <button class="glass-icon sq-menu-btn" style="width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:16px;height:16px"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
         </button>
       </div>
@@ -67,11 +215,11 @@ function renderPost(p) {
           <span class="sq-value">${p.value.toFixed(1)}</span>
           ${!p.liked ? '<span style="font-size:10px;opacity:0.6">+1 SWORL</span>' : ''}
         </button>
-        <button class="sq-action-new">
+        <button class="sq-action-new sq-comment-btn" data-id="${p.id}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:18px;height:18px"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
           <span>${p.comments}</span>
         </button>
-        <button class="sq-action-new">
+        <button class="sq-action-new sq-repost-btn" data-id="${p.id}">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:18px;height:18px"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
           <span>${p.reposts}</span>
         </button>
@@ -258,6 +406,37 @@ export function renderSquare(container) {
       setTimeout(() => likeBtn.style.transform = '', 200);
       return;
     }
+
+    const commentBtn = e.target.closest('.sq-comment-btn');
+    if (commentBtn) {
+      const id = parseInt(commentBtn.dataset.id);
+      const post = posts.find(p => p.id === id);
+      if (post) openCommentSheet(post);
+      return;
+    }
+
+    const repostBtn = e.target.closest('.sq-repost-btn');
+    if (repostBtn) {
+      const id = parseInt(repostBtn.dataset.id);
+      const post = posts.find(p => p.id === id);
+      if (post) {
+        post.reposts++;
+        repostBtn.querySelector('span').textContent = post.reposts;
+        showToast('转发成功，+0.5 SWORL');
+      }
+      return;
+    }
+
+    const menuBtn = e.target.closest('.sq-menu-btn');
+    if (menuBtn) {
+      const postEl = menuBtn.closest('.sq-post-new');
+      if (!postEl) return;
+      const id = parseInt(postEl.dataset.id);
+      const post = posts.find(p => p.id === id);
+      if (post) openMenuSheet(post);
+      return;
+    }
+
     const avatar = e.target.closest('.sq-avatar-img');
     if (avatar) {
       const postEl = avatar.closest('.sq-post-new');

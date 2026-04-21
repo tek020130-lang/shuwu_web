@@ -10,6 +10,15 @@ const DATE_FILTERS = [
 let activeCollection = 'all';
 let activeDate = '全部';
 let spiralObserver = null;
+const purchasedIds = new Set();
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:calc(var(--nav-h) + 24px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.75);color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;z-index:9999;pointer-events:none;white-space:nowrap;backdrop-filter:blur(8px)';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
 
 // SWORL 图标 SVG
 function sworlIcon(id = '') {
@@ -23,12 +32,14 @@ function typeLabel(type) {
 }
 
 function renderProductCard(p, index) {
+  const isPurchased = purchasedIds.has(p.id);
   return `
     <div class="mall-grid-item" data-index="${index}">
       <div class="mall-grid-card glass-card" data-id="${p.id}">
         <div class="mall-grid-img">
           <img src="${p.image}" alt="${p.name}" loading="lazy" />
           ${p.limited ? '<div class="mall-grid-badge">限定</div>' : ''}
+          ${isPurchased ? '<div class="mall-grid-badge" style="background:rgba(16,185,129,0.9);right:8px;left:auto">已购</div>' : ''}
         </div>
         <div class="mall-grid-body">
           <div class="mall-grid-type">${typeLabel(p.type)}</div>
@@ -140,7 +151,73 @@ function openDetail(productId) {
     window.dispatchEvent(new CustomEvent('openPayment', {
       detail: { name: p.name, sub: p.series + ' · ' + p.creator, amount: (p.price * 0.85).toFixed(2) }
     }));
+    const onSuccess = () => {
+      purchasedIds.add(p.id);
+      window.removeEventListener('paymentSuccess', onSuccess);
+      showToast(`${p.name} 购买成功`);
+    };
+    window.addEventListener('paymentSuccess', onSuccess);
   });
+}
+
+function openCartSheet() {
+  let overlay = document.getElementById('mall-cart-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'mall-cart-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:300;display:none;flex-direction:column;justify-content:flex-end';
+    overlay.innerHTML = `
+      <div id="mall-cart-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(6px)"></div>
+      <div id="mall-cart-sheet" style="position:relative;z-index:1;background:#fff;border-radius:28px 28px 0 0;max-height:75vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.23,1,0.32,1)">
+        <div style="width:36px;height:4px;border-radius:2px;background:#E5E5EA;margin:12px auto 0;flex-shrink:0"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 12px;flex-shrink:0">
+          <div style="font-size:18px;font-weight:700">已购藏品</div>
+          <button id="mall-cart-close" style="width:32px;height:32px;border-radius:50%;border:none;background:#F5F5F7;display:flex;align-items:center;justify-content:center;cursor:pointer">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div id="mall-cart-list" style="overflow-y:auto;padding:0 16px 40px;display:flex;flex-direction:column;gap:12px"></div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.querySelector('#mall-cart-backdrop').addEventListener('click', closeCartSheet);
+    overlay.querySelector('#mall-cart-close').addEventListener('click', closeCartSheet);
+  }
+
+  const list = overlay.querySelector('#mall-cart-list');
+  const purchased = mallProducts.filter(p => purchasedIds.has(p.id));
+  if (purchased.length === 0) {
+    list.innerHTML = `<div style="text-align:center;padding:60px 0;color:var(--text-sub)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" style="width:48px;height:48px;margin-bottom:12px;opacity:0.3"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <div style="font-size:15px">暂无已购藏品</div>
+    </div>`;
+  } else {
+    list.innerHTML = purchased.map(p => `
+      <div style="display:flex;gap:12px;padding:12px;background:#F9F9FB;border-radius:16px">
+        <img src="${p.image}" alt="${p.name}" style="width:64px;height:64px;border-radius:12px;object-fit:cover;flex-shrink:0" />
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:600;margin-bottom:4px">${p.name}</div>
+          <div style="font-size:12px;color:var(--text-sub);margin-bottom:6px">${p.series} · ${p.creator}</div>
+          <div style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600">
+            <svg viewBox="0 0 24 24" fill="none" style="width:14px;height:14px"><circle cx="12" cy="12" r="10" fill="url(#sg-cart${p.id})"/><path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4" stroke="white" stroke-width="2" stroke-linecap="round"/><defs><linearGradient id="sg-cart${p.id}" x1="0" y1="0" x2="24" y2="24"><stop stop-color="#8B5CF6"/><stop offset="1" stop-color="#A78BFA"/></linearGradient></defs></svg>
+            ${p.price.toLocaleString()}
+          </div>
+        </div>
+        <div style="font-size:11px;color:#10B981;font-weight:600;align-self:flex-start;padding:3px 8px;background:rgba(16,185,129,0.1);border-radius:20px">已购</div>
+      </div>
+    `).join('');
+  }
+
+  overlay.style.display = 'flex';
+  requestAnimationFrame(() => { overlay.querySelector('#mall-cart-sheet').style.transform = 'translateY(0)'; });
+}
+
+function closeCartSheet() {
+  const overlay = document.getElementById('mall-cart-overlay');
+  const sheet = overlay?.querySelector('#mall-cart-sheet');
+  if (!overlay || !sheet) return;
+  sheet.style.transform = 'translateY(100%)';
+  setTimeout(() => { overlay.style.display = 'none'; }, 400);
 }
 
 export function renderMall(container) {
@@ -234,8 +311,10 @@ export function renderMall(container) {
   renderFeed(container);
 
   container.querySelector('#mall-search-trigger').addEventListener('click', () => {
-    window.dispatchEvent(new CustomEvent('openSearch'));
+    window.dispatchEvent(new CustomEvent('openSearch', { detail: { mode: 'mall' } }));
   });
+
+  container.querySelector('.mall-cart-btn').addEventListener('click', () => openCartSheet());
 
   container.querySelector('#mall-product-grid').addEventListener('click', e => {
     const card = e.target.closest('.mall-grid-card');

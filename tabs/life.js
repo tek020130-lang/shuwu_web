@@ -20,7 +20,75 @@ const QUICK_ICONS = {
 };
 
 
-let activeCategory = 'all';
+function openMerchantDetail(merchant) {
+  let overlay = document.getElementById('life-merchant-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'life-merchant-overlay';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:300;display:none;flex-direction:column;justify-content:flex-end';
+    overlay.innerHTML = `
+      <div id="life-merchant-backdrop" style="position:absolute;inset:0;background:rgba(0,0,0,0.4);backdrop-filter:blur(6px)"></div>
+      <div id="life-merchant-sheet" style="position:relative;z-index:1;background:#fff;border-radius:28px 28px 0 0;max-height:88vh;display:flex;flex-direction:column;transform:translateY(100%);transition:transform 0.4s cubic-bezier(0.23,1,0.32,1)">
+        <div id="life-merchant-content" style="overflow-y:auto;flex:1"></div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
+    overlay.querySelector('#life-merchant-backdrop').addEventListener('click', closeMerchantDetail);
+  }
+
+  const m = merchant;
+  overlay.querySelector('#life-merchant-content').innerHTML = `
+    <div style="position:relative">
+      <img src="${m.image}" alt="${m.name}" style="width:100%;height:220px;object-fit:cover;border-radius:28px 28px 0 0" />
+      ${m.goldTier ? `<div style="position:absolute;top:16px;left:16px;background:rgba(201,168,76,0.9);color:#fff;font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;backdrop-filter:blur(4px)">数物旗舰店</div>` : ''}
+      <button id="life-merchant-close" style="position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,0.4);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="width:18px;height:18px"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div style="padding:20px 20px 40px">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px">
+        <div style="font-size:22px;font-weight:700">${m.name}</div>
+        <div style="display:flex;align-items:center;gap:4px;background:#FFF9F0;padding:6px 12px;border-radius:20px">
+          <svg viewBox="0 0 24 24" fill="#F59E0B" style="width:14px;height:14px"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          <span style="font-size:14px;font-weight:600;color:#F59E0B">${m.rating}</span>
+        </div>
+      </div>
+      <div style="font-size:14px;color:var(--text-sub);margin-bottom:16px">${m.desc}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+        ${(m.tags || []).map(tag => `<span style="font-size:12px;padding:4px 10px;border-radius:20px;background:#F5F5F7;color:var(--text-sub)">${tag}</span>`).join('')}
+      </div>
+      <div style="display:flex;gap:20px;margin-bottom:20px">
+        ${m.distance ? `<div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-sub)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:15px;height:15px"><path d="M12 21s-8-4.5-8-11a8 8 0 1116 0c0 6.5-8 11-8 11z"/><circle cx="12" cy="10" r="3"/></svg>${m.distance}</div>` : ''}
+        ${m.openTime ? `<div style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-sub)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width:15px;height:15px"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2"/></svg>${m.openTime}</div>` : ''}
+        ${m.priceRange ? `<div style="font-size:13px;color:var(--text-sub)">${m.priceRange}</div>` : ''}
+      </div>
+      ${m.sworlSupport ? `<div style="display:flex;align-items:center;gap:8px;padding:12px 16px;background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(167,139,250,0.08));border-radius:14px;margin-bottom:20px">
+        <svg viewBox="0 0 24 24" fill="none" style="width:18px;height:18px;flex-shrink:0"><circle cx="12" cy="12" r="10" fill="url(#sg-detail)"/><path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4-1.8 4-4 4" stroke="white" stroke-width="2" stroke-linecap="round"/><defs><linearGradient id="sg-detail" x1="0" y1="0" x2="24" y2="24"><stop stop-color="#8B5CF6"/><stop offset="1" stop-color="#A78BFA"/></linearGradient></defs></svg>
+        <span style="font-size:13px;color:#8B5CF6;font-weight:500">支持 SWORL 支付，消费即获分红</span>
+      </div>` : ''}
+      <button id="life-merchant-pay-btn" style="width:100%;height:54px;border-radius:999px;background:#1A1A1A;color:#fff;font-size:16px;font-weight:600;border:none;cursor:pointer">立即消费</button>
+    </div>
+  `;
+
+  overlay.style.display = 'flex';
+  requestAnimationFrame(() => { overlay.querySelector('#life-merchant-sheet').style.transform = 'translateY(0)'; });
+
+  overlay.querySelector('#life-merchant-close').addEventListener('click', closeMerchantDetail);
+  overlay.querySelector('#life-merchant-pay-btn').addEventListener('click', () => {
+    closeMerchantDetail();
+    window.dispatchEvent(new CustomEvent('openPayment', {
+      detail: { name: m.name, sub: m.desc, amount: (m.priceRange === '¥¥¥¥' ? 680 : m.priceRange === '¥¥¥' ? 320 : m.priceRange === '¥¥' ? 128 : 68).toFixed(2) }
+    }));
+  });
+}
+
+function closeMerchantDetail() {
+  const overlay = document.getElementById('life-merchant-overlay');
+  const sheet = overlay?.querySelector('#life-merchant-sheet');
+  if (!overlay || !sheet) return;
+  sheet.style.transform = 'translateY(100%)';
+  setTimeout(() => { overlay.style.display = 'none'; }, 400);
+}
 
 function renderHeader() {
   return `
@@ -163,7 +231,7 @@ export async function renderLife(container) {
     if (card) {
       const id = parseInt(card.dataset.id);
       const merchant = merchantList.find(m => m.id === id) || mockMerchants.find(m => m.id === id);
-      if (merchant) window.dispatchEvent(new CustomEvent('openPayment', { detail: merchant }));
+      if (merchant) openMerchantDetail(merchant);
       return;
     }
 

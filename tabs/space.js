@@ -1,6 +1,14 @@
 import { spaceState, spaceNFTs, dividendHistory } from '../data/mock.js';
 import { api, setToken, isLoggedIn } from '../api/client.js';
 
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:calc(var(--nav-h) + 24px);left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.75);color:#fff;padding:10px 20px;border-radius:999px;font-size:13px;z-index:9999;pointer-events:none;white-space:nowrap;backdrop-filter:blur(8px)';
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2200);
+}
+
 // 精美简笔画人物图标
 const AVATAR_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px">
   <circle cx="12" cy="7" r="3.5"/>
@@ -330,7 +338,9 @@ async function renderSpaceMain(container) {
 
   // 复制地址
   container.querySelector('#sp-copy-addr').addEventListener('click', () => {
-    navigator.clipboard.writeText(profile.walletAddress || '0xfb75...de7a').catch(() => {});
+    navigator.clipboard.writeText(profile.walletAddress || '0xfb75...de7a')
+      .then(() => showToast('地址已复制'))
+      .catch(() => showToast('地址已复制'));
   });
 
   // 快捷操作
@@ -354,8 +364,23 @@ async function renderSpaceMain(container) {
   container.querySelector('.sp-menu-list').addEventListener('click', e => {
     const btn = e.target.closest('.sp-menu-item');
     if (!btn) return;
-    if (btn.dataset.menu === 'nft') openNFTModal();
+    const menu = btn.dataset.menu;
+    if (menu === 'nft') openNFTModal();
+    else if (menu === 'swap') window.dispatchEvent(new CustomEvent('openSwapInfo'));
+    else if (menu === 'security') document.getElementById('profile-overlay').classList.remove('hidden');
+    else if (menu === 'settings' || menu === 'help') showToast('功能即将上线，敬请期待');
   });
+
+  // 支付成功后同步余额
+  const onPaymentSuccess = e => {
+    const paid = parseFloat(e.detail?.amount || 0);
+    if (paid > 0) {
+      spaceState.sworlBalance = Math.max(0, spaceState.sworlBalance - paid);
+      const balEl = container.querySelector('.sp-token-balance');
+      if (balEl) balEl.textContent = spaceState.sworlBalance.toLocaleString();
+    }
+  };
+  window.addEventListener('paymentSuccess', onPaymentSuccess);
 
   // NFT 卡片全屏
   const fsOverlay = container.querySelector('#nft-fullscreen-overlay');

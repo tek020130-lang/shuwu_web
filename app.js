@@ -92,8 +92,8 @@ function initCompose() {
       addPost(content, selectedTopic);
       overlay.classList.add('hidden');
       textarea.value = '';
-      // Re-render square feed
       renderSquare(document.getElementById('page-square'));
+      window.dispatchEvent(new CustomEvent('paymentSuccess', { detail: { amount: 0.5 } }));
     }, 400);
   });
 }

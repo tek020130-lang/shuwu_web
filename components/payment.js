@@ -74,6 +74,7 @@ export function initPayment() {
     setTimeout(() => {
       overlay.classList.add('hidden');
       success.classList.remove('hidden');
+      window.dispatchEvent(new CustomEvent('paymentSuccess', { detail: { amount } }));
       setTimeout(() => success.classList.add('hidden'), 2000);
     }, 400);
   });
