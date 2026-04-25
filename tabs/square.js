@@ -1,4 +1,5 @@
 import { posts as initialPosts, ticker, topics, userState } from '../data/mock.js';
+import { api, isLoggedIn } from '../api/client.js';
 
 const TABS = [
   { id: '热门', icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8.5 14.5A2.5 2.5 0 0011 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 11-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 002.5 2.5z"/></svg>` },
@@ -322,7 +323,17 @@ function renderFeed(container) {
   feed.innerHTML = `<div style="padding:12px 16px;display:flex;flex-direction:column;gap:12px">${html}</div>`;
 }
 
+async function loadPosts() {
+  try {
+    const data = await api.getPosts();
+    if (Array.isArray(data) && data.length > 0) {
+      posts = data.map(p => ({ ...p, liked: false, reposts: p.reposts || 0 }));
+    }
+  } catch { /* keep mock */ }
+}
+
 export function renderSquare(container) {
+  loadPosts().then(() => renderFeed(container));
   container.innerHTML = `
     <div class="sq-header">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px 10px">
@@ -405,6 +416,7 @@ export function renderSquare(container) {
       likeBtn.querySelector('.sq-value').textContent = post.value.toFixed(1);
       likeBtn.style.transform = 'scale(1.25)';
       setTimeout(() => likeBtn.style.transform = '', 200);
+      if (isLoggedIn()) api.likePost(id).catch(() => {});
       return;
     }
 
@@ -453,7 +465,14 @@ export function renderSquare(container) {
     window.dispatchEvent(new CustomEvent('openCompose'));
   });
 
-  container.querySelector('#sq-profile-btn').addEventListener('click', () => {
+  container.querySelector('#sq-profile-btn').addEventListener('click', async () => {
+    if (isLoggedIn()) {
+      try {
+        const myPosts = await api.getMyPosts();
+        openPostsCenter('我的帖子', myPosts);
+        return;
+      } catch { /* fallback */ }
+    }
     const myPosts = posts.filter(p => p.userId === 'me' || p.userName === userState.name || p.userName === '我');
     openPostsCenter('我的帖子', myPosts);
   });
@@ -490,15 +509,20 @@ function closePostsCenter() {
   setTimeout(() => { overlay.style.display = 'none'; }, 400);
 }
 
-export function addPost(content, topic) {
+export async function addPost(content, topic) {
   const newPost = {
     id: ++postIdCounter,
-    userId: 'me', userName: '我', nftTier: 'genesis',
+    userId: 'me', userName: userState.name || '我', nftTier: 'genesis',
     avatarColor: '#1A1A1A', verified: true,
     content, topic, value: 0, comments: 0, reposts: 0,
     time: '刚刚', liked: false,
   };
   posts.unshift(newPost);
   userState.sworlBalance = +(userState.sworlBalance - POST_COST).toFixed(1);
+  if (isLoggedIn()) {
+    try {
+      await api.createPost(content, topic);
+    } catch { /* local post already added, ignore */ }
+  }
   return newPost;
 }

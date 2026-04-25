@@ -1,6 +1,8 @@
 import { merchants as mockMerchants, userState } from '../data/mock.js';
+import { api } from '../api/client.js';
 
 let activeCategory = 'all';
+let merchantList = mockMerchants.map(m => ({ ...m }));
 
 function showToast(msg) {
   const t = document.createElement('div');
@@ -197,10 +199,32 @@ function renderFeed(list) {
   `;
 }
 
-export function renderLife(container) {
-  const merchantList = mockMerchants;
+async function loadMerchants(params = {}) {
+  try {
+    const data = await api.getMerchants(params);
+    if (Array.isArray(data) && data.length > 0) return data;
+  } catch { /* fallback */ }
+  const cat = params.category;
+  const q = (params.q || '').toLowerCase();
+  return mockMerchants.filter(m => {
+    const catMatch = !cat || m.category === cat;
+    const qMatch = !q || m.name.toLowerCase().includes(q) || m.desc.toLowerCase().includes(q);
+    return catMatch && qMatch;
+  });
+}
 
+export function renderLife(container) {
   container.innerHTML = renderHeader() + renderQuickNav() + renderFeed(merchantList);
+
+  loadMerchants().then(data => {
+    merchantList = data;
+    const feed = container.querySelector('#merchant-feed');
+    if (feed) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = renderFeed(merchantList);
+      feed.replaceWith(tmp.querySelector('#merchant-feed'));
+    }
+  });
 
   container.querySelector('#search-bar-trigger').addEventListener('click', () => {
     window.dispatchEvent(new CustomEvent('openSearch'));
@@ -214,7 +238,7 @@ export function renderLife(container) {
     window.dispatchEvent(new CustomEvent('openMap'));
   });
 
-  container.addEventListener('click', e => {
+  container.addEventListener('click', async e => {
     const catItem = e.target.closest('.cat-item');
     if (catItem) {
       activeCategory = catItem.dataset.cat;
@@ -222,7 +246,8 @@ export function renderLife(container) {
         el.classList.toggle('active', el.dataset.cat === activeCategory);
       });
       const params = activeCategory !== 'all' ? { category: activeCategory } : {};
-      let list = mockMerchants.filter(m => activeCategory === 'all' || m.category === activeCategory);
+      const list = await loadMerchants(params);
+      merchantList = list;
       const feed = container.querySelector('#merchant-feed');
       const tmp = document.createElement('div');
       tmp.innerHTML = renderFeed(list);
@@ -238,23 +263,17 @@ export function renderLife(container) {
       return;
     }
 
-    // 金刚区点击 → 触发对应分类筛选
     const quickItem = e.target.closest('.life-quick-item');
     if (quickItem) {
       const label = quickItem.querySelector('.life-quick-label').textContent.trim();
-      if (label === '附近商户') {
-        window.dispatchEvent(new CustomEvent('openMap'));
-        return;
-      }
-      if (label === '更多服务') {
-        showToast('更多服务即将上线，敬请期待');
-        return;
-      }
+      if (label === '附近商户') { window.dispatchEvent(new CustomEvent('openMap')); return; }
+      if (label === '更多服务') { showToast('更多服务即将上线，敬请期待'); return; }
       const catMap = { '娱乐中心': '娱乐场所', '文创工坊': '潮玩周边', '餐饮消费': '餐饮消费', '数物限定': '数物限定', '旗舰店': '旗舰店', '精选推荐': 'all' };
       const cat = catMap[label] || 'all';
       activeCategory = cat;
       container.querySelectorAll('.cat-item').forEach(el => el.classList.toggle('active', el.dataset.cat === activeCategory));
-      let list = mockMerchants.filter(m => cat === 'all' || m.category === cat);
+      const list = await loadMerchants(cat !== 'all' ? { category: cat } : {});
+      merchantList = list;
       const feed = container.querySelector('#merchant-feed');
       const tmp = document.createElement('div');
       tmp.innerHTML = renderFeed(list);

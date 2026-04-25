@@ -28,12 +28,11 @@ function renderRegister(container) {
       <div class="sp-reg-top">
         <div class="sp-reg-logo">数物</div>
         <div class="sp-reg-title">创建你的专属钱包</div>
-        <div class="sp-reg-sub">手机号注册，自动生成链上身份</div>
+        <div class="sp-reg-sub">邮箱注册，自动生成链上身份</div>
       </div>
       <div class="sp-reg-form">
         <div class="sp-reg-field">
-          <span class="sp-reg-prefix">+86</span>
-          <input class="sp-reg-input" id="reg-phone" type="tel" placeholder="请输入手机号" maxlength="11" />
+          <input class="sp-reg-input" id="reg-email" type="email" placeholder="请输入邮箱" />
         </div>
         <div class="sp-reg-field sp-reg-code-row hidden" id="reg-code-row">
           <input class="sp-reg-input" id="reg-code" type="number" placeholder="验证码" maxlength="6" />
@@ -50,21 +49,27 @@ function renderRegister(container) {
     </div>
   `;
 
-  const phoneInput = container.querySelector('#reg-phone');
+  const emailInput = container.querySelector('#reg-email');
   const codeRow = container.querySelector('#reg-code-row');
   const submitBtn = container.querySelector('#reg-submit');
   const sendBtn = container.querySelector('#reg-send-btn');
   const errorEl = container.querySelector('#reg-error');
-  let step = 1;
 
-  phoneInput.addEventListener('input', () => {
-    if (phoneInput.value.length === 11) codeRow.classList.remove('hidden');
+  function isValidEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+  emailInput.addEventListener('input', () => {
+    if (isValidEmail(emailInput.value)) codeRow.classList.remove('hidden');
+    else codeRow.classList.add('hidden');
   });
 
   sendBtn.addEventListener('click', async () => {
+    if (!isValidEmail(emailInput.value)) {
+      errorEl.textContent = '请输入正确的邮箱'; errorEl.classList.remove('hidden'); return;
+    }
     sendBtn.disabled = true;
+    errorEl.classList.add('hidden');
     try {
-      await api.sendCode(phoneInput.value);
+      await api.sendCode(emailInput.value);
       let t = 60;
       sendBtn.textContent = `${t}s后重发`;
       const iv = setInterval(() => {
@@ -79,19 +84,22 @@ function renderRegister(container) {
 
   submitBtn.addEventListener('click', async () => {
     errorEl.classList.add('hidden');
-    if (step === 1 && phoneInput.value.length === 11) {
-      step = 2; submitBtn.textContent = '完成注册';
-    } else if (step === 2) {
-      submitBtn.disabled = true;
-      try {
-        const { token } = await api.verify(phoneInput.value, container.querySelector('#reg-code').value);
-        setToken(token);
-        localStorage.setItem('sw_registered', '1');
-        renderSpaceMain(container);
-      } catch (e) {
-        errorEl.textContent = e.message; errorEl.classList.remove('hidden');
-        submitBtn.disabled = false;
-      }
+    if (!isValidEmail(emailInput.value)) {
+      errorEl.textContent = '请输入正确的邮箱'; errorEl.classList.remove('hidden'); return;
+    }
+    const code = container.querySelector('#reg-code').value;
+    if (!code || code.length < 6) {
+      errorEl.textContent = '请输入6位验证码'; errorEl.classList.remove('hidden'); return;
+    }
+    submitBtn.disabled = true;
+    try {
+      const { token } = await api.verify(emailInput.value, code);
+      setToken(token);
+      localStorage.setItem('sw_registered', '1');
+      renderSpaceMain(container);
+    } catch (e) {
+      errorEl.textContent = e.message; errorEl.classList.remove('hidden');
+      submitBtn.disabled = false;
     }
   });
 

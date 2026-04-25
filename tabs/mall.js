@@ -1,4 +1,5 @@
-import { mallProducts, mallCollections, newDrops } from '../data/mock.js';
+import { mallProducts as mockProducts, mallCollections, newDrops } from '../data/mock.js';
+import { api, isLoggedIn } from '../api/client.js';
 
 const DATE_FILTERS = [
   { date: '全部', day: '全部' },
@@ -11,6 +12,7 @@ let activeCollection = 'all';
 let activeDate = '全部';
 let spiralObserver = null;
 const purchasedIds = new Set();
+let products = mockProducts.map(p => ({ ...p }));
 
 function showToast(msg) {
   const t = document.createElement('div');
@@ -55,7 +57,7 @@ function renderProductCard(p, index) {
 }
 
 function getFiltered() {
-  return mallProducts.filter(p => {
+  return products.filter(p => {
     const colMatch = activeCollection === 'all' || p.collection === activeCollection;
     const dateMatch = activeDate === '全部' || p.date === activeDate;
     return colMatch && dateMatch;
@@ -92,7 +94,7 @@ function renderDateCol(container) {
 }
 
 function openDetail(productId) {
-  const p = mallProducts.find(x => x.id === productId);
+  const p = products.find(x => x.id === productId);
   if (!p) return;
 
   const overlay = document.getElementById('mall-detail-overlay');
@@ -146,8 +148,20 @@ function openDetail(productId) {
   sheet.querySelector('#mall-chain-btn').addEventListener('click', () => {
     sheet.querySelector('#mall-chain-timeline').classList.toggle('hidden');
   });
-  sheet.querySelector('#mall-buy-btn').addEventListener('click', () => {
+  sheet.querySelector('#mall-buy-btn').addEventListener('click', async () => {
     overlay.style.display = 'none';
+    if (isLoggedIn()) {
+      try {
+        await api.purchase(p.id);
+        purchasedIds.add(p.id);
+        showToast(`${p.name} 购买成功`);
+        window.dispatchEvent(new CustomEvent('paymentSuccess', { detail: { amount: p.price } }));
+        return;
+      } catch (e) {
+        showToast(e.message || '购买失败');
+        return;
+      }
+    }
     window.dispatchEvent(new CustomEvent('openPayment', {
       detail: { name: p.name, sub: p.series + ' · ' + p.creator, amount: (p.price * 0.85).toFixed(2) }
     }));
@@ -220,7 +234,15 @@ function closeCartSheet() {
   setTimeout(() => { overlay.style.display = 'none'; }, 400);
 }
 
+async function loadProducts() {
+  try {
+    const data = await api.getProducts();
+    if (Array.isArray(data) && data.length > 0) products = data;
+  } catch { /* keep mock */ }
+}
+
 export function renderMall(container) {
+  loadProducts().then(() => renderFeed(container));
   container.innerHTML = `
     <div class="mall-page">
       <div class="mall-header">

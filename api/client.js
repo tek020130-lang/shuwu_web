@@ -33,13 +33,14 @@ async function request(path, options = {}) {
 
 export const api = {
   // Auth
-  sendCode: (phone) => request('/api/auth/send-code', { method: 'POST', body: JSON.stringify({ phone }) }),
-  verify: (phone, code) => request('/api/auth/verify', { method: 'POST', body: JSON.stringify({ phone, code }) }),
+  sendCode: (email) => request('/api/auth/send-code', { method: 'POST', body: JSON.stringify({ email }) }),
+  verify: (email, code) => request('/api/auth/verify', { method: 'POST', body: JSON.stringify({ email, code }) }),
 
   // User
   getProfile: () => request('/api/user/profile'),
   getNFTs: () => request('/api/user/nfts'),
   getDividends: () => request('/api/user/dividends'),
+  getMyPosts: () => request('/api/user/posts'),
 
   // Mall
   getProducts: (params = {}) => request('/api/mall/products?' + new URLSearchParams(params)),
