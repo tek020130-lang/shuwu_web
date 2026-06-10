@@ -6,7 +6,58 @@
 - 后端：`/root/shuwu_api` → Railway: https://shuwuapi-production.up.railway.app
 - GitHub: tek020130-lang/shuwu_web, tek020130-lang/shuwu_api
 
-## 已完成
+## 2026-06-10（续）登录修复 + 邀请码 + 商家入驻 + 支付方案讨论
+
+### EAS Build 成功
+- Build ID `5d99cfcd` 状态：**finished**
+- APK 下载：`https://expo.dev/artifacts/eas/cynTdasN9PNEgXJMPWh58g.apk`
+
+### 登录流程重构
+- **问题**：前端调 `/api/auth/verify`，后端无此路由，所有账号登录失败
+- **修复**：RegisterScreen 改为完整四步状态机
+  - `email` → 选择"登录"（老用户输密码）或"注册新账号"（发验证码）
+  - `login` → 输密码 + "忘记密码"入口
+  - `code` → 输 6 位验证码（注册/忘密码共用）
+  - `setpwd` → 设置/重置密码，完成后自动登录
+- 老账号（`password_hash` 为空）走忘记密码重设一次即可
+- 新 Build：`0f481f65`（进行中 → 后续触发新 build 含邀请码等改动）
+
+### 邀请码系统
+- 格式：6位，2位大写字母 + 4位数字，如 `SW3829`（去掉 I/O 避免混淆）
+- 注册时自动生成，碰撞重试最多5次
+- 接受可选 `referralCode` 参数，验证通过后给邀请人链上发 20 SWORL
+- 老用户迁移：migration 自动补全邀请码
+- **开关**：Railway 加 `REFERRAL_ENABLED=true` 才生效，后期关闭只需删除/改为 false
+- profile 接口返回 `referralCode` + `referralCount`
+- 个人中心展示邀请码 + 已邀请人数 + 一键复制邀请文案
+- 注册第三步（设密码）有可选邀请码输入框
+
+### 商家入驻完整链路
+- **App 内嵌表单**（生活板块底部低调入口）：
+  - 全屏 Sheet，填写：店铺封面图（Pinata IPFS 上传）、名称、类目（8选项）、电话、地址、邮箱+密码
+  - 提交成功显示"申请已提交"页
+- **后端**：
+  - `merchant_users` 表加 `phone/category/address/description/image_url` 字段
+  - 新增 `POST /api/merchant/auth/upload-image`（multer + Pinata）
+  - 激活逻辑重构：管理员激活时**自动创建** `merchants` 记录（含图片），无需手动填写
+- **商家后台** `shuwu-merchant.netlify.app`：注册表单补全类目/电话/地址/简介
+
+### 支付方案讨论（待决策）
+**问题**：消费者前期没有数字人民币，当前混合支付 UI 有 e-CNY 选项但无法使用
+
+**推荐方案（待实施）**：微信/支付宝充值 SWORL → 消费全部用 SWORL
+- 用户用微信/支付宝购买 SWORL（充值页面待做）
+- 消费（商城/盲盒/线下）全部扣 SWORL
+- e-CNY 选项暂时隐藏，等银行合作后开放
+- 前提：需要微信/支付宝商户号（申请个体户/企业号，1-2周）
+- Railway 填入 5 个环境变量即可启用
+
+**待实施内容**：
+1. App 空间板块加"充值 SWORL"入口（微信/支付宝 → SWORL）
+2. 支付 UI 隐藏 e-CNY 选项（暂时）
+3. 商城/生活板块支付改为纯 SWORL
+
+
 
 ### UI 设计
 - ~~暖白背景~~ → 改为 #f2f2f7（iOS 无色磨砂玻璃质感背景）
@@ -1006,3 +1057,45 @@ NFT 加成：普通 +0.1x，稀有 +0.3x，创世 +0.5x
 2. 真机测试所有交互细节
 3. App Store / Google Play 上架准备
 4. 商家后台新增 distance/openTime/tags/priceRange 字段编辑入口
+
+## 2026-06-10 逻辑修复 + 私钥迁移 + EAS Build
+
+### 逻辑修复（三项）
+
+#### 1. nft_mint_requests 补 tier 字段
+- 问题：`nft_mint_requests` 表没有 `tier` 列，`admin.js` 读 `mintReq.tier` → 全部铸造为 'basic'
+- 修复：`src/app.js` runMigrations 追加 `ALTER TABLE nft_mint_requests ADD COLUMN IF NOT EXISTS tier`，加 CHECK 约束 `(basic/rare/excellent/genesis)`
+
+#### 2. 商城混合支付全链路打通
+- 问题：前端支付滑块有 SWORL/e-CNY 混合支付 UI，但 `mall.js` 后端只扣 SWORL，`mallApi.purchase()` 也不传金额
+- 修复：
+  - `src/routes/mall.js`：接受 `sworlAmount`/`ecnyAmount` 参数，分别验余额、扣款，分别写 platform_ledger（SWORL/ECNY 两条），链上只回收 SWORL 部分
+  - `src/api/mall.ts`：`purchase(productId, sworlAmount, ecnyAmount)`
+  - `src/screens/MallScreen.tsx`：`onSuccess(s, e)` → `onBuy(s, e)` → `mallApi.purchase(id, s, e)`；购物车按商品价格比例分摊
+  - `src/app.js`：`orders` 表补 `sworl_amount`/`ecny_amount` 字段
+
+#### 3. 私钥迁移到 Supabase
+- 问题：Railway users 表中存有加密私钥，需迁移到 Supabase wallet_keys 表（双库隔离）
+- 执行：在本地注入 `DATABASE_URL` + `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` 运行迁移脚本
+- 结果：4 个用户钱包私钥已在 Supabase（之前已写入），Railway 字段已清空（`key_provider='migrated'`）
+- Supabase 项目：`https://kruzqsiotddzwpdessac.supabase.co`
+
+### EAS Build 问题排查
+
+#### 失败原因
+- `@gorhom/bottom-sheet`、`react-native-reanimated`、`expo-router`、`expo-notifications` 等依赖未在源码中使用，但会触发 Gradle 原生模块编译，导致 Gradle build failed
+- `app.json` 插件列表残留 `expo-router`、`expo-notifications` 引用
+
+#### 修复
+- 移除未使用依赖：`react-native-reanimated`、`@gorhom/bottom-sheet`、`expo-router`、`expo-notifications`、`axios`、`react-dom`、`react-native-web`、`@tanstack/react-query`、`@react-navigation/stack`、`@expo-google-fonts/noto-serif-sc`、`@expo/ngrok`
+- `src/api/client.ts` 从 axios 改为原生 fetch（完全兼容，签名不变）
+- `app.json` 移除 `expo-router` 和 `expo-notifications` 插件
+
+#### 当前 Build
+- Build ID：`5d99cfcd-ae67-4801-8f6e-5f5df6f199b5`
+- 链接：https://expo.dev/accounts/cild/projects/shuwu-app/builds/5d99cfcd-ae67-4801-8f6e-5f5df6f199b5
+- 状态：进行中（约 10-20 分钟）
+
+### 推送记录
+- `shuwu_api` main → Railway（自动部署，migration 自动跑）
+- `shuwu-app` master → GitHub（commit: ebf3097）
