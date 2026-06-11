@@ -6,6 +6,84 @@
 - 后端：`/root/shuwu_api` → Railway: https://shuwuapi-production.up.railway.app
 - GitHub: tek020130-lang/shuwu_web, tek020130-lang/shuwu_api
 
+---
+
+## 2026-06-11 支付方案重构 + 消费激励完善
+
+### 支付策略（已确认方向）
+
+**三段演进路径：**
+1. **前期（新用户冷启动）**：微信/支付宝直接付人民币 → 平台收 CNY → 用户得 SWORL 激励
+2. **中期**：积累 SWORL 后使用 SWORL + e-CNY 混合支付（原有滑块，不变）
+3. **远期**：数字人民币生态成熟后全面切换
+
+**SWORL 获取渠道（不开放充值购买）：**
+- 消费激励（cashback）：微信/支付宝/e-CNY 消费返还 cashback_rate × SWORL
+- 私募融资：以后通过 SWORLPresale 合约面向投资者
+- 注册奖励、邀请奖励、话题挑战奖励
+
+### 前端改动（`/root/shuwu-app/`）
+
+**支付 sheet 新增"微信/支付宝"通道：**
+- `MallScreen.tsx` / `LifeScreen.tsx`：支付 sheet 顶部加 `数物支付 | 微信/支付宝` 两个 tab
+- 数物支付 tab：原有 SWORL/e-CNY 混合滑块，完全不变
+- 微信/支付宝 tab：绿色微信按钮 + 蓝色支付宝按钮，显示 SWORL 激励预览
+- 支付成功页：动态显示激励数量（`+{cashback} SWORL 激励已入账`）
+- 商户号未上线时：优雅降级显示"即将上线"toast
+
+**API 层：**
+- `api/payment.ts`：新增 `createOrder(channel, amountCny, productId, orderType)` 和 `mockSuccess(outTradeNo)`
+- `api/mall.ts`：`purchase()` 新增 `paymentChannel` / `outTradeNo` 参数支持微信/支付宝通道
+
+### 后端改动（`/root/shuwu_api/`）
+
+#### 新增接口
+- `POST /api/payment/create`：创建支付订单，商户号未配置时返回 `{mock: true}` 降级
+- `POST /api/payment/mock-success`：模拟支付回调，需 Railway 配置 `MOCK_PAYMENT_ENABLED=true` 才生效（默认关闭，防止生产环境刷 SWORL）
+
+#### 消费激励逻辑（全面修复）
+- `paymentService.js`：新增 `grantCashback()`，**先写数据库余额（保证用户一定到账）**，再异步发链上（失败不影响到账）
+- cashback 比例从 `platform_config.cashback_rate` 读取，默认 0.1（10%），管理员可热更新
+- 各通道激励规则：
+  - 微信/支付宝：全额 CNY × cashback_rate
+  - 混合支付 e-CNY 部分：e-CNY 金额 × cashback_rate
+  - 混合支付 SWORL 部分：不触发激励（不重复）
+  - 纯 e-CNY：全额 × cashback_rate
+
+#### 商城购买接口增强（`mall.js`）
+- 新增 `paymentChannel` + `outTradeNo` 参数分支
+- 微信/支付宝通道：验证 payment_orders 已 paid，不扣 SWORL/e-CNY 余额
+- 幂等保护：同一 outTradeNo 只能创建一条 orders 记录
+- 混合支付 e-CNY 部分：COMMIT 后异步调 grantCashback 发放激励
+
+#### 经济参数热更新
+- `admin.js`：新增 `GET /api/admin/config` + `PUT /api/admin/config/:key`
+- 白名单保护 9 个参数：cashback_rate、royalty_platform_share、sworl_rate_per_cny、dividend_pool_rate、发帖/点赞/评论费用、邀请/注册奖励
+- `app.js`：runMigrations 补全 9 个参数初始值到 platform_config 表
+- 管理员后台新增"经济参数"页面（已部署 https://shuwu-admin.netlify.app/config）
+
+#### 数据库新增字段（runMigrations 自动执行）
+- `payment_orders`：`product_id`、`order_type`
+- `orders`：`payment_channel`、`payment_out_trade_no`（唯一索引）
+- `platform_config`：补全 9 个经济参数初始值
+
+### 商户号申请指引
+- **微信支付**：https://pay.weixin.qq.com，需 App 开放平台 AppID + 营业执照，约 3-7 工作日
+- **支付宝**：open.alipay.com → 创建应用 → App支付，约 1-3 工作日
+- 个体工商户即可，两者主体材料相同
+- 到位后 Railway 填入 5 个环境变量（WECHAT_APP_ID 等）即可上线真实支付
+
+### 测试方式
+- Railway 加 `MOCK_PAYMENT_ENABLED=true` 可开启 mock 全链路测试
+- 上线前删除此变量，真实支付回调由微信/支付宝服务器发起
+
+### 提交记录
+- `31b265c` feat: 新增微信/支付宝支付通道框架
+- `69149d5` feat: 消费激励逻辑完善 + 经济参数热更新
+- `df89549` fix: mock-success 改用 MOCK_PAYMENT_ENABLED 开关，防止生产环境刷 SWORL
+
+---
+
 ## 2026-06-10（续）登录修复 + 邀请码 + 商家入驻 + 支付方案讨论
 
 ### EAS Build 成功
